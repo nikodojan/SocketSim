@@ -1,0 +1,98 @@
+﻿<Window x:Class="SocketTest.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SocketTest"
+        mc:Ignorable="d"
+        Title="Socket Test" Height="475" Width="465">
+    <Grid>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_Exit"/>
+                </MenuItem>
+
+            </Menu>
+            <Grid Margin="1,2,1,1">
+                <TabControl FontSize="14">
+                    <TabItem Header="TCP Server" Name="tcpServerTab">
+                        <Grid Background="#eeeeee">
+                            <StackPanel Orientation="Vertical" Margin="5">
+                                <TextBlock Name="serverIntroTextBlock" 
+                                           Text="Function description Function description Function description Function description Function description Function description"
+                                           TextAlignment="Left"
+                                           FontSize="12"
+                                           Margin="0,3"
+                                           TextWrapping="Wrap"></TextBlock>
+                                <Label Content="Server:" FontSize="12"></Label>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                                    <Label Content="IP-Address:" VerticalAlignment="Center" />
+                                    <TextBox Name="serverIpTextBox" 
+                                             Text="255.255.255.255" 
+                                             Padding="3"
+                                             Width="120" TextWrapping="NoWrap" AcceptsReturn="False" VerticalAlignment="Center"/>
+                                    <Label Content="Port:" VerticalAlignment="Center" />
+                                    <TextBox Name="serverPortTextBox" 
+                                             Text="65000" 
+                                             Padding="3"
+                                             Width="60" TextWrapping="NoWrap" AcceptsReturn="False" VerticalAlignment="Center"/>
+                                    <Button Content="Start server" 
+                                            Name="serverStartButton"
+                                            VerticalAlignment="Center" 
+                                            Margin="5,0,0,0" 
+                                            Padding="5,3" 
+                                            VerticalContentAlignment="Center"/>
+                                </StackPanel>
+                                <Label Content="Log:" FontSize="12"></Label>
+                                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                                  VerticalScrollBarVisibility="Visible"
+                                                  Margin="0,3">
+                                    <TextBlock Name="serverLogTextBox" 
+                                                   Background="White"
+                                                   
+                                                   TextAlignment="Left"
+                                                   FontSize="12"
+                                                   TextWrapping="Wrap"
+                                                   Height="150"/>
+                                </ScrollViewer>
+                                <Button Content="Clear log"></Button>
+
+                                <Label Content="User input:" FontSize="12"></Label>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                    <TextBox Name="serverMessageTextBox"
+                                             Text="Enter message here"
+                                             Margin="0,3"
+                                             Padding="3"
+                                             TextWrapping="NoWrap" AcceptsReturn="False" Width="325"/>
+                                    <Button Content="Send" 
+                                            VerticalAlignment="Center" 
+                                            Margin="5,0,0,0" 
+                                            Padding="5,3" 
+                                            VerticalContentAlignment="Center"
+                                            HorizontalAlignment="Right"/>
+                                    <Button Content="Delete" 
+                                            VerticalAlignment="Center" 
+                                            Margin="5,0,0,0" 
+                                            Padding="5,3" 
+                                            VerticalContentAlignment="Center"
+                                            HorizontalAlignment="Right"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem Header="TCP Client">
+                        <Grid Background="#FFE5E5E5"/>
+                    </TabItem>
+                    <TabItem Header="UDP">
+                        <Grid Background="#FFE5E5E5"/>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+        </DockPanel>
+
+
+    </Grid>
+</Window>
