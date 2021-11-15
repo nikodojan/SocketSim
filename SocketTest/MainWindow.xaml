@@ -5,22 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SocketTest"
         mc:Ignorable="d"
-        Title="Socket Test" Height="475" Width="465">
-    <Grid>
+        Title="Socket Test" Height="475" Width="465"
+        Background="LightSkyBlue">
+    
         <DockPanel>
-            <Menu DockPanel.Dock="Top">
-                <MenuItem Header="_File">
+        <Menu DockPanel.Dock="Top" VerticalAlignment="Center" Background="CornflowerBlue">
+                <MenuItem Header="_File" VerticalAlignment="Center">
                     <MenuItem Header="_Exit"/>
                 </MenuItem>
-
             </Menu>
             <Grid Margin="1,2,1,1">
-                <TabControl FontSize="14">
-                    <TabItem Header="TCP Server" Name="tcpServerTab">
-                        <Grid Background="#eeeeee">
+            <TabControl FontSize="14" Background="LightSkyBlue">
+                <TabItem Header="TCP Server" Name="tcpServerTab" Background="LightSkyBlue">
+                        <Grid>
                             <StackPanel Orientation="Vertical" Margin="5">
                                 <TextBlock Name="serverIntroTextBlock" 
-                                           Text="Function description Function description Function description Function description Function description Function description"
+                                           Text="Use this window to start a TCP server, which is listening to the specified IP address and port."
                                            TextAlignment="Left"
                                            FontSize="12"
                                            Margin="0,3"
@@ -47,16 +47,18 @@
                                 <Label Content="Log:" FontSize="12"></Label>
                                 <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                                                   VerticalScrollBarVisibility="Visible"
-                                                  Margin="0,3">
-                                    <TextBlock Name="serverLogTextBox" 
+                                                  Margin="0,3"
+                                                  Name="serverLogScrollViewer">
+                                    <!--<TextBlock Name="serverLogTextBox" 
                                                    Background="White"
-                                                   
                                                    TextAlignment="Left"
                                                    FontSize="12"
                                                    TextWrapping="Wrap"
-                                                   Height="150"/>
+                                                   Height="150"/>-->
                                 </ScrollViewer>
-                                <Button Content="Clear log"></Button>
+                                <Button Content="Clear log" 
+                                        Name="serverClearLogButton"
+                                        Padding="5,3"></Button>
 
                                 <Label Content="User input:" FontSize="12"></Label>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
@@ -94,5 +96,5 @@
         </DockPanel>
 
 
-    </Grid>
+    
 </Window>
