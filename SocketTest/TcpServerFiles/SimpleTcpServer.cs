@@ -60,8 +60,7 @@ namespace SocketTest.TcpServerFiles
             ServerStarted?.Invoke(this, EventArgs.Empty);
             await LogEvent($"S: Server begins listening on {localIPEndPoint.ToString()}");
 
-            try
-            {
+           
                 _tcpClient = await _listener.AcceptTcpClientAsync();
                 await LogEvent($"S: Client connected: {_tcpClient?.Client.RemoteEndPoint?.ToString()}");
 
