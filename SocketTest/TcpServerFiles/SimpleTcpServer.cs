@@ -54,11 +54,14 @@ namespace SocketTest.TcpServerFiles
 
             try
             {
-                _listener = new TcpListener(localIPEndPoint);
-                _listener.Start();
-                ServerStarted?.Invoke(this, EventArgs.Empty);
-                await LogEvent($"S: Server begins listening on {localIPEndPoint.ToString()}");
+            _listener = new TcpListener(localIPEndPoint);
 
+            _listener.Start();
+            ServerStarted?.Invoke(this, EventArgs.Empty);
+            await LogEvent($"S: Server begins listening on {localIPEndPoint.ToString()}");
+
+            try
+            {
                 _tcpClient = await _listener.AcceptTcpClientAsync();
                 await LogEvent($"S: Client connected: {_tcpClient?.Client.RemoteEndPoint?.ToString()}");
 
