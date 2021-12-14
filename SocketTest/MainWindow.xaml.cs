@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SocketTest.Models;
+using SocketTest.Resources;
 using SocketTest.StaticLogs;
 using SocketTest.TcpServerFiles;
 
@@ -60,9 +61,29 @@ namespace SocketTest
             serverLogTextBox.FontSize = 12;
             serverLogTextBox.Background = Brushes.White;
             serverLogTextBox.TextWrapping = TextWrapping.Wrap;
+
             serverLogScrollViewer.Content = serverLogTextBox;
             serverLogScrollViewer.Height = 150;
             serverLogScrollViewer.Background = Brushes.White;
+
+            fileMenuExitButton.Click += (object sender, RoutedEventArgs e) => Application.Current.Shutdown();
+
+            serverMessageTextBox.Text = "";
+            serverSendMessageButton.Click += ServerSendMessageButton_Click;
+            serverDeleteMessageButton.Click += ServerDeleteMessageButton_Click;
+
+            
+        }
+
+        private void ServerDeleteMessageButton_Click(object sender, RoutedEventArgs e)
+        {
+            serverMessageTextBox.Text = "";
+        }
+
+        private async void ServerSendMessageButton_Click(object sender, RoutedEventArgs e)
+        {
+            await _server.SendMessage(serverMessageTextBox.Text);
+            serverMessageTextBox.Text = "";
         }
 
         #region GUI event handler
@@ -163,6 +184,8 @@ namespace SocketTest
         {
             serverLogTextBox.Text = "";
         } 
+
+        
         #endregion
 
         /// <summary>

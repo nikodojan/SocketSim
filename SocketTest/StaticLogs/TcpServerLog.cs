@@ -18,7 +18,7 @@ namespace SocketTest.StaticLogs
         /// </summary>
         /// <param name="record"></param>
         /// <returns></returns>
-        public static async Task AddRecord(string record)
+        public static async Task AddRecordAsync(string record)
         {
             Log.Add(record);
         }

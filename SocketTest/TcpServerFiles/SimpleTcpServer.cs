@@ -19,6 +19,7 @@ namespace SocketTest.TcpServerFiles
     {
         private Endpoint _endPoint;
         private StreamReader _reader;
+        private StreamWriter _writer;
         private TcpListener _listener;
         private TcpClient _tcpClient;
         private NetworkStream _stream;
@@ -42,6 +43,10 @@ namespace SocketTest.TcpServerFiles
         /// Is invoked when the server is stopped.
         /// </summary>
         public event EventHandler ServerStopped;
+        /// <summary>
+        /// Is invoked when the TCP listener accepted a client and the stream is created.
+        /// </summary>
+        public event EventHandler ClientConnected;
 
         /// <summary>
         /// Starts a new instance of a TCP listener and accepts clients.
@@ -54,60 +59,82 @@ namespace SocketTest.TcpServerFiles
 
             try
             {
-            _listener = new TcpListener(localIPEndPoint);
+                _listener = new TcpListener(localIPEndPoint);
 
-            _listener.Start();
-            ServerStarted?.Invoke(this, EventArgs.Empty);
-            await LogEvent($"S: Server begins listening on {localIPEndPoint.ToString()}");
+                _listener.Start();
+                ServerStarted?.Invoke(this, EventArgs.Empty);
+                await LogEventAsync($"S: Server begins listening on {localIPEndPoint.ToString()}");
 
-           
                 _tcpClient = await _listener.AcceptTcpClientAsync();
-                await LogEvent($"S: Client connected: {_tcpClient?.Client.RemoteEndPoint?.ToString()}");
 
-                _stream = _tcpClient?.GetStream();
+                _stream = _tcpClient.GetStream();
                 _reader = new StreamReader(_stream);
-                StreamWriter writer = new StreamWriter(_stream);
+                _writer = new StreamWriter(_stream);
+                
+                ClientConnected?.Invoke(this, EventArgs.Empty);
+                await LogEventAsync($"S: Client connected: {_tcpClient.Client.RemoteEndPoint?.ToString()}");
 
                 while (_keepListening)
                 {
                     var incoming = await _reader.ReadLineAsync();
-                    await LogEvent($"C: {incoming}");
+                    if (incoming is not null)
+                    {
+                        await LogEventAsync($"C: {incoming}");
+                    }
                 }
-                // TODO: send message
+
             }
             catch (SocketException se)
             {
-                await LogEvent($"S: Error: 1 \r\n {se.Message}");
+                await StopListener();
             }
             catch (Exception e)
             {
-                await LogEvent($"S: Error: \r\n {e}");
+                await StopListener();
+                await LogEventAsync($"S: Exception: \r\n {e}");
             }
             finally
             {
                 ServerStopped?.Invoke(this, EventArgs.Empty);
-                _keepListening = false;
-                _reader?.Close();
-                _tcpClient?.Close();
-                _listener?.Stop();
+                await LogEventAsync("S: Server stopped listening.");
             }
+        }
 
+        public async Task SendMessage(string message)
+        {
+            if (_writer is not null)
+            {
+                await _writer.WriteLineAsync(message);
+                await _writer.FlushAsync();
+                await LogEventAsync($"S: {message}");
+            }
         }
 
         public async Task StopListener()
         {
             _keepListening = false;
-            _reader?.Close();
-            _tcpClient?.Close();
+            if (_tcpClient is not null)
+            {
+                _reader?.Close();
+                _reader?.Dispose();
+                await _writer.DisposeAsync();
+                await _stream.DisposeAsync();
+                _tcpClient?.Close();
+            }
+
             _listener?.Stop();
-            
-            ServerStopped?.Invoke(this, EventArgs.Empty);
-            await LogEvent("S: Server stopped listening.");
+
+            //ServerStopped?.Invoke(this, EventArgs.Empty);
+            //await LogEvent("S: Server stopped listening.");
         }
 
-        private async Task LogEvent(string text)
+        /// <summary>
+        /// Adds a new record to the log and invokes LogChanged event.
+        /// </summary>
+        /// <param name="text">The text to be logged</param>
+        private async Task LogEventAsync(string text)
         {
-            await TcpServerLog.AddRecord($"{text}\r\n");
+            await TcpServerLog.AddRecordAsync($"{text}\r\n");
             LogChanged?.Invoke(this, EventArgs.Empty);
         }
     }

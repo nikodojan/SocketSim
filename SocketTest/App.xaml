@@ -4,6 +4,17 @@
              xmlns:local="clr-namespace:SocketTest"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Strings.xaml" />
+                <ResourceDictionary Source="Resources/BasicStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="Arial" TargetType="{x:Type Control}">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontFamily" Value="Arial" />
+            </Style>
+        </ResourceDictionary>
+
     </Application.Resources>
 </Application>

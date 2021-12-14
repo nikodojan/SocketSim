@@ -5,96 +5,160 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SocketTest"
         mc:Ignorable="d"
-        Title="Socket Test" Height="475" Width="465"
-        Background="LightSkyBlue">
-    
-        <DockPanel>
-        <Menu DockPanel.Dock="Top" VerticalAlignment="Center" Background="CornflowerBlue">
-                <MenuItem Header="_File" VerticalAlignment="Center">
-                    <MenuItem Header="_Exit"/>
-                </MenuItem>
-            </Menu>
-            <Grid Margin="1,2,1,1">
-            <TabControl FontSize="14" Background="LightSkyBlue">
-                <TabItem Header="TCP Server" Name="tcpServerTab" Background="LightSkyBlue">
-                        <Grid>
-                            <StackPanel Orientation="Vertical" Margin="5">
-                                <TextBlock Name="serverIntroTextBlock" 
-                                           Text="Use this window to start a TCP server, which is listening to the specified IP address and port."
-                                           TextAlignment="Left"
-                                           FontSize="12"
-                                           Margin="0,3"
-                                           TextWrapping="Wrap"></TextBlock>
-                                <Label Content="Server:" FontSize="12"></Label>
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
-                                    <Label Content="IP-Address:" VerticalAlignment="Center" />
-                                    <TextBox Name="serverIpTextBox" 
-                                             Text="255.255.255.255" 
-                                             Padding="3"
-                                             Width="120" TextWrapping="NoWrap" AcceptsReturn="False" VerticalAlignment="Center"/>
-                                    <Label Content="Port:" VerticalAlignment="Center" />
-                                    <TextBox Name="serverPortTextBox" 
-                                             Text="65000" 
-                                             Padding="3"
-                                             Width="60" TextWrapping="NoWrap" AcceptsReturn="False" VerticalAlignment="Center"/>
-                                    <Button Content="Start server" 
-                                            Name="serverStartButton"
-                                            VerticalAlignment="Center" 
-                                            Margin="5,0,0,0" 
-                                            Padding="5,3" 
-                                            VerticalContentAlignment="Center"/>
-                                </StackPanel>
-                                <Label Content="Log:" FontSize="12"></Label>
-                                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                                                  VerticalScrollBarVisibility="Visible"
-                                                  Margin="0,3"
-                                                  Name="serverLogScrollViewer">
-                                    <!--<TextBlock Name="serverLogTextBox" 
-                                                   Background="White"
-                                                   TextAlignment="Left"
-                                                   FontSize="12"
-                                                   TextWrapping="Wrap"
-                                                   Height="150"/>-->
-                                </ScrollViewer>
-                                <Button Content="Clear log" 
-                                        Name="serverClearLogButton"
-                                        Padding="5,3"></Button>
-
-                                <Label Content="User input:" FontSize="12"></Label>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                                    <TextBox Name="serverMessageTextBox"
-                                             Text="Enter message here"
-                                             Margin="0,3"
-                                             Padding="3"
-                                             TextWrapping="NoWrap" AcceptsReturn="False" Width="325"/>
-                                    <Button Content="Send" 
-                                            VerticalAlignment="Center" 
-                                            Margin="5,0,0,0" 
-                                            Padding="5,3" 
-                                            VerticalContentAlignment="Center"
-                                            HorizontalAlignment="Right"/>
-                                    <Button Content="Delete" 
-                                            VerticalAlignment="Center" 
-                                            Margin="5,0,0,0" 
-                                            Padding="5,3" 
-                                            VerticalContentAlignment="Center"
-                                            HorizontalAlignment="Right"/>
-                                </StackPanel>
-                            </StackPanel>
-
+        Title="Socket Test" Height="475" Width="450"
+        FontWeight="Light">
+    <Window.Resources>
+        <SolidColorBrush x:Key="BasicBlue" Color="#0086dc"/>
+        <Style x:Key="SvStyle" TargetType="ScrollViewer">
+            <Setter Property="OverridesDefaultStyle" Value="True"></Setter>
+            <Setter Property="VerticalScrollBarVisibility" Value="Visible"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollViewer">
+                        <Grid ClipToBounds="True">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border CornerRadius="4,0,0,4" 
+                                    Grid.Row="0" 
+                                    Grid.Column="0"
+                                    Padding="2"
+                                    BorderThickness="1,1,1,1"
+                                    BorderBrush="{StaticResource BasicBlue}"
+                                    Name="svBorder">
+                            <ScrollContentPresenter 
+                                Content="{TemplateBinding ScrollViewer.Content}" 
+                                ClipToBounds="True" >
+                            </ScrollContentPresenter>
+                            
+                        </Border>
+                            <ScrollBar Orientation="Vertical" Grid.Row="0" Grid.Column="1"
+                                       Minimum="0" 
+                                       Maximum="{TemplateBinding ScrollViewer.ScrollableHeight}"
+                                       Value="{TemplateBinding ScrollViewer.VerticalOffset}" 
+                                       ViewportSize="{TemplateBinding ScrollViewer.ViewportHeight}"
+                                       ClipToBounds="True"/>
                         </Grid>
-                    </TabItem>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-                    <TabItem Header="TCP Client">
-                        <Grid Background="#FFE5E5E5"/>
-                    </TabItem>
-                    <TabItem Header="UDP">
-                        <Grid Background="#FFE5E5E5"/>
-                    </TabItem>
-                </TabControl>
-            </Grid>
-        </DockPanel>
+        
 
+        <Style x:Key="MainBoxStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="BorderBrush" Value="{StaticResource BasicBlue}"/>
+            <Setter Property="BorderThickness" Value="1"></Setter>
+            <Style.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius" Value="4" />
+                </Style>
+            </Style.Resources>
+        </Style>
+    </Window.Resources>
+    <DockPanel>
+    <Menu DockPanel.Dock="Top" VerticalAlignment="Center" Background="{StaticResource BasicBlue}" FontSize="14">
+            <MenuItem Header="_File" VerticalAlignment="Center" Foreground="WhiteSmoke">
+                <MenuItem Header="_Exit" Name="fileMenuExitButton" Background="{StaticResource BasicBlue}" Foreground="WhiteSmoke"/>
+            </MenuItem>
+        </Menu>
+        <Grid Margin="1,2,1,1">
+
+            <TabControl FontSize="14" Background="White">
+            <TabItem Header="TCP Server" Name="tcpServerTab" Background="LightSteelBlue">
+                    <Grid>
+                        <StackPanel Orientation="Vertical" Margin="5" Background="White">
+                            <TextBlock Name="serverIntroTextBlock" 
+                                       Text="Use this window to start a TCP server, which is listening to the specified IP address and port."
+                                       TextAlignment="Left"
+                                       FontSize="12"
+                                       Margin="0,3"
+                                       TextWrapping="Wrap"></TextBlock>
+                            <Label Content="Server:" FontSize="12"></Label>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                                <Label Content="IP-Address:" VerticalAlignment="Center" />
+                                <TextBox Name="serverIpTextBox" 
+                                         Text="255.255.255.255" 
+                                         Padding="3"
+                                         Style="{StaticResource MainBoxStyle}"
+                                         Width="120" TextWrapping="NoWrap" AcceptsReturn="False" VerticalAlignment="Center"/>
+                                <Label Content="Port:" VerticalAlignment="Center" />
+                                <TextBox Name="serverPortTextBox" 
+                                         Style="{StaticResource MainBoxStyle}"
+                                         Text="65000" 
+                                         Padding="3"
+                                         Width="60" 
+                                         TextWrapping="NoWrap" 
+                                         AcceptsReturn="False" 
+                                         VerticalAlignment="Center"/>
+                            <Button Content="Start server" 
+                                        Name="serverStartButton"
+                                        VerticalAlignment="Center" 
+                                        Margin="5,0,0,0" 
+                                        Padding="5,3" 
+                                        VerticalContentAlignment="Center"
+                                        Style="{StaticResource MainButtonStyle}">
+                            </Button>
+                            </StackPanel>
+                            <Label Content="Log:" FontSize="12"></Label>
+                            <Border Name="scrollBorder"
+                                    BorderThickness="0">
+                                
+                                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                              Name="serverLogScrollViewer"
+                                              Padding="1"
+                                              Height="150"
+                                              ClipToBounds="True"
+                                              Style="{StaticResource SvStyle}"/>
+                            </Border>
+                        <Button Content="Clear log" 
+                                    Name="serverClearLogButton"
+                                    Padding="5,3"
+                                    Margin="0, 2,0,0"
+                                    Style="{StaticResource MainButtonStyle}"/>
+
+                            <Label Content="User input:" FontSize="12"></Label>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <TextBox Name="serverMessageTextBox"
+                                         Margin="0,3"
+                                         Padding="3"
+                                         TextWrapping="NoWrap" 
+                                         AcceptsReturn="False" 
+                                         Width="325"
+                                         Style="{StaticResource MainBoxStyle}"/>
+                                <Button Content="Send" 
+                                        Name="serverSendMessageButton"
+                                        VerticalAlignment="Center" 
+                                        Margin="5,0,0,0" 
+                                        Padding="5,3" 
+                                        VerticalContentAlignment="Center"
+                                        HorizontalAlignment="Right"/>
+                                <Button Content="Delete" 
+                                        Name="serverDeleteMessageButton"
+                                        VerticalAlignment="Center" 
+                                        Margin="5,0,0,0" 
+                                        Padding="5,3" 
+                                        VerticalContentAlignment="Center"
+                                        HorizontalAlignment="Right"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="TCP Client" Background="LightSteelBlue">
+                    <Grid Background="#FFE5E5E5"/>
+                </TabItem>
+                <TabItem Header="{StaticResource tcpServerTab}" Background="LightSteelBlue">
+                    <Grid Background="#FFE5E5E5"/>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </DockPanel>
 
     
 </Window>
