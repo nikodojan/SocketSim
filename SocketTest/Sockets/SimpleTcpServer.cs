@@ -1,34 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using SocketTest.Models;
 using SocketTest.StaticLogs;
 
-namespace SocketTest.TcpServerFiles
+namespace SocketTest.Sockets
 {
     /// <summary>
     /// Class that handles the Tcp server.
     /// </summary>
     public class SimpleTcpServer
     {
-        private Endpoint _endPoint;
+        //private Endpoint _endPoint;
         private StreamReader _reader;
         private StreamWriter _writer;
         private TcpListener _listener;
         private TcpClient _tcpClient;
         private NetworkStream _stream;
+        private IPEndPoint _localIPEndPoint;
 
         private bool _keepListening = true;
         
-        public SimpleTcpServer(Endpoint endpoint)
+        public SimpleTcpServer(IPEndPoint endpoint)
         {
-            _endPoint = endpoint;
+            _localIPEndPoint = endpoint;
         }
 
         /// <summary>
@@ -55,15 +52,15 @@ namespace SocketTest.TcpServerFiles
         /// <exception cref="SocketException"></exception>
         public async Task StartListener()
         {
-            IPEndPoint localIPEndPoint = new IPEndPoint(IPAddress.Parse(_endPoint.IPAddress), _endPoint.Port);
+            //IPEndPoint localIPEndPoint = new IPEndPoint(IPAddress.Parse(_endPoint.IPAddress), _endPoint.Port);
 
             try
             {
-                _listener = new TcpListener(localIPEndPoint);
+                _listener = new TcpListener(_localIPEndPoint);
 
                 _listener.Start();
                 ServerStarted?.Invoke(this, EventArgs.Empty);
-                await LogEventAsync($"S: Server begins listening on {localIPEndPoint.ToString()}");
+                await LogEventAsync($"S: Server begins listening on {_localIPEndPoint.ToString()}");
 
                 _tcpClient = await _listener.AcceptTcpClientAsync();
 

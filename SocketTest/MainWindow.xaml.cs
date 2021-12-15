@@ -15,8 +15,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SocketTest.Models;
 using SocketTest.Resources;
+using SocketTest.Sockets;
 using SocketTest.StaticLogs;
-using SocketTest.TcpServerFiles;
 
 namespace SocketTest
 {
@@ -29,27 +29,31 @@ namespace SocketTest
         private const string StopServerButtonLabel = "Stop server";
 
         private TextBlock serverLogTextBox;
+        private TextBlock UdpLogTextBox;
 
         private SimpleTcpServer _server;
+        private SimpleUdpClient _udpClient;
         
         public MainWindow()
         {
             InitializeComponent();
             DataContext = this;
-            InitializeControls();
+            InitializeTcpServerTab();
+            InitializeUdpTab();
         }
+        
+        #region TCP SERVER TAB : Contains all TCP server related methods
 
         /// <summary>
-        /// Initializes the UI controls.
+        /// Initializes the UI controls in the TCP server tab.
         /// </summary>
-        private void InitializeControls()
+        private void InitializeTcpServerTab()
         {
             // default text
             serverIpTextBox.Text = "127.0.0.1";
             serverPortTextBox.Text = "4646";
 
             serverStartButton.Content = StartServerButtonLabel;
-
             serverMessageTextBox.IsEnabled = false;
 
             // click event handler
@@ -71,22 +75,31 @@ namespace SocketTest
             serverMessageTextBox.Text = "";
             serverSendMessageButton.Click += ServerSendMessageButton_Click;
             serverDeleteMessageButton.Click += ServerDeleteMessageButton_Click;
-
-            
         }
 
-        private void ServerDeleteMessageButton_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Creates a new TCP server instance, subscribes to it's events and starts listener.
+        /// </summary>
+        /// <param name="ep"></param>
+        /// <returns></returns>
+        public async Task StartTcpServer(IPEndPoint ep)
         {
-            serverMessageTextBox.Text = "";
+            _server = new SimpleTcpServer(ep);
+            _server.LogChanged += OnServerLogChanged;
+            _server.ServerStarted += SwitchControlsOnStart;
+            _server.ServerStopped += SwitchControlsOnStop;
+            await _server.StartListener();
         }
 
-        private async void ServerSendMessageButton_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Stops the Tcp Server.
+        /// </summary>
+        public async Task StopTcpServer()
         {
-            await _server.SendMessage(serverMessageTextBox.Text);
-            serverMessageTextBox.Text = "";
+            await _server.StopListener();
         }
 
-        #region GUI event handler
+        #region TCP Server event handler
         /// <summary>
         /// Click event handler for the "Start server" / "Stop server" button.
         /// The called method depends on whether the server is running or not.
@@ -109,32 +122,8 @@ namespace SocketTest
         /// </summary>
         public async void OnStartServerButtonClick()
         {
-            IPAddress ip = null;
-            bool ipParsed = IPAddress.TryParse(serverIpTextBox.Text, out ip);
-            if (!ipParsed)
-            {
-                serverLogTextBox.Text = "IP Address has invalid format\r\n";
-            }
-
-            //int port;
-            bool portParsed = Int32.TryParse(serverPortTextBox.Text, out int port);
-            if (!portParsed)
-            {
-                serverLogTextBox.Text = "Port has invalid format\r\n";
-            }
-
-            bool portIsValid = true;
-            if (port < 0 || port > 65535)
-            {
-                serverLogTextBox.Text = "Invalid port number\r\n";
-                portIsValid = false;
-            }
-
-            if (ipParsed && portParsed && portIsValid)
-            {
-                Endpoint ep = new Endpoint(serverIpTextBox.Text, port);
-                await StartTcpServer(ep);
-            }
+            var output = ParseEndpoint(serverIpTextBox.Text, serverPortTextBox.Text);
+            await StartTcpServer(output);
         }
 
         public async void OnStopServerButtonClick()
@@ -183,32 +172,124 @@ namespace SocketTest
         private void OnClearLogButton_Click(object sender, RoutedEventArgs e)
         {
             serverLogTextBox.Text = "";
-        } 
+        }
 
-        
+        private void ServerDeleteMessageButton_Click(object sender, RoutedEventArgs e)
+        {
+            serverMessageTextBox.Text = "";
+        }
+
+        private async void ServerSendMessageButton_Click(object sender, RoutedEventArgs e)
+        {
+            await _server.SendMessage(serverMessageTextBox.Text);
+            serverMessageTextBox.Text = "";
+        }
+
         #endregion
 
+
+        #endregion
+
+        #region TCP CLIENT TAB : Contains all TCP client related methods
         /// <summary>
-        /// Creates a new TCP server instance, subscribes to the it's events and starts listener.
+        /// Initializes the UI controls in the TCP client tab.
         /// </summary>
-        /// <param name="ep"></param>
-        /// <returns></returns>
-        public async Task StartTcpServer(Endpoint ep)
+        private void InitializeTcpClientTab()
         {
-            _server = new SimpleTcpServer(ep);
-            _server.LogChanged += OnServerLogChanged;
-            _server.ServerStarted += SwitchControlsOnStart;
-            _server.ServerStopped += SwitchControlsOnStop;
-            await _server.StartListener();
+
         }
+        #endregion
+
+        #region UDP TAB: Contains all UDP related methods
 
         /// <summary>
-        /// Stops the Tcp Server.
+        /// Initializes the UI controls in the UDP tab.
         /// </summary>
-        public async Task StopTcpServer()
+        private void InitializeUdpTab()
         {
-            await _server.StopListener();
+            _udpClient = new SimpleUdpClient();
+
+            UdpDestinationIpTextBox.Text = "255.255.255.255";
+            UdpDestinationPortTextBox.Text = "65535";
+            UdpMessageTextBox.Text = "";
+
+            // log text block and scroll viewer
+            UdpLogTextBox = new TextBlock();
+            UdpLogTextBox.FontSize = 12;
+            UdpLogTextBox.Background = Brushes.White;
+            UdpLogTextBox.TextWrapping = TextWrapping.Wrap;
+
+            UdpLogScrollViewer.Content = serverLogTextBox;
+            UdpLogScrollViewer.Height = 150;
+            UdpLogScrollViewer.Background = Brushes.White;
+
+            //event handler
+            UdpSendMessageButton.Click += UdpSendMessageButton_Click;
+            UdpDeleteMessageButton.Click += (object sender, RoutedEventArgs e) => { UdpMessageTextBox.Text = ""; };
+            _udpClient.LogChanged += OnUdpLogChanged;
         }
 
+
+        #region UDP event handler
+        /// <summary>
+        /// Click event handler for Send button in UDP tab.
+        /// Sends a message via UDP.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+
+        private async void UdpSendMessageButton_Click(object sender, RoutedEventArgs e)
+        {
+            var endPoint = ParseEndpoint(UdpDestinationIpTextBox.Text, UdpDestinationPortTextBox.Text);
+            if (endPoint != null)
+                await _udpClient.SendAsync(endPoint, UdpMessageTextBox.Text);
+        }
+
+        private void OnUdpLogChanged(object sender, EventArgs e)
+        {
+            UdpLogTextBox.Text += UdpLog.Log[^1];
+        }
+
+
+        #endregion
+
+        #endregion
+
+
+
+
+        /// <summary>
+        /// Parses the entered IP address and port to IPEndPoint.
+        /// </summary>
+        /// <param name="ipInput">IP addresses to be parsed</param>
+        /// <param name="portInput">Port number to be parsed</param>
+        /// <returns>An instance of an IPEndPoint with the entered parameters or <see langword="null"/> if the entered values are invalid. </returns>
+        private IPEndPoint ParseEndpoint(string ipInput, string portInput)
+        {
+            bool ipParsed = IPAddress.TryParse(serverIpTextBox.Text, out IPAddress ip);
+            if (!ipParsed)
+                MessageBox.Show("IP Address has invalid format.", "Input error");
+
+
+            bool portParsed = Int32.TryParse(serverPortTextBox.Text, out int port);
+            if (!portParsed)
+                MessageBox.Show("Port has invalid format.", "Input error");
+
+            bool portIsValid = true;
+            if (port < 0 || port > 65535)
+            {
+                MessageBox.Show("Invalid port number.\r\n" +
+                                "The port number must be between 0 and 65535", "Input error");
+                portIsValid = false;
+            }
+
+            if (ipParsed && portParsed && portIsValid)
+            {
+                //Endpoint ep = new Endpoint(serverIpTextBox.Text, port);
+                IPEndPoint endPoint = new IPEndPoint(ip, port);
+                return endPoint;
+            }
+            return null;
+        }
     }
 }

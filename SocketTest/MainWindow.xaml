@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SocketTest"
         mc:Ignorable="d"
-        Title="Socket Test" Height="475" Width="450"
+        Title="Socket Test" Height="475" Width="544"
         FontWeight="Light">
     <Window.Resources>
         <SolidColorBrush x:Key="BasicBlue" Color="#0086dc"/>
@@ -73,20 +73,19 @@
                     <Grid>
                         <StackPanel Orientation="Vertical" Margin="5" Background="White">
                             <TextBlock Name="serverIntroTextBlock" 
-                                       Text="Use this window to start a TCP server, which is listening to the specified IP address and port."
+                                       Text="Start a TCP server, which is listening to the specified IP address and port."
                                        TextAlignment="Left"
-                                       FontSize="12"
                                        Margin="0,3"
                                        TextWrapping="Wrap"></TextBlock>
-                            <Label Content="Server:" FontSize="12"></Label>
+                            <Label Content="Server configuration:" Padding="0,3,0,5"/>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
-                                <Label Content="IP-Address:" VerticalAlignment="Center" />
+                                <Label Content="IP-Address:" VerticalAlignment="Center" Padding="0,0,5,0"/>
                                 <TextBox Name="serverIpTextBox" 
                                          Text="255.255.255.255" 
                                          Padding="3"
                                          Style="{StaticResource MainBoxStyle}"
                                          Width="120" TextWrapping="NoWrap" AcceptsReturn="False" VerticalAlignment="Center"/>
-                                <Label Content="Port:" VerticalAlignment="Center" />
+                                <Label Content="Port:" VerticalAlignment="Center"/>
                                 <TextBox Name="serverPortTextBox" 
                                          Style="{StaticResource MainBoxStyle}"
                                          Text="65000" 
@@ -95,6 +94,10 @@
                                          TextWrapping="NoWrap" 
                                          AcceptsReturn="False" 
                                          VerticalAlignment="Center"/>
+                                <CheckBox Content="Echo" VerticalAlignment="Center"
+                                          Margin="8,0"
+                                          VerticalContentAlignment="Center"
+                                          />
                             <Button Content="Start server" 
                                         Name="serverStartButton"
                                         VerticalAlignment="Center" 
@@ -103,6 +106,7 @@
                                         VerticalContentAlignment="Center"
                                         Style="{StaticResource MainButtonStyle}">
                             </Button>
+                                
                             </StackPanel>
                             <Label Content="Log:" FontSize="12"></Label>
                             <Border Name="scrollBorder"
@@ -136,14 +140,16 @@
                                         Margin="5,0,0,0" 
                                         Padding="5,3" 
                                         VerticalContentAlignment="Center"
-                                        HorizontalAlignment="Right"/>
+                                        HorizontalAlignment="Right"
+                                        Style="{StaticResource MainButtonStyle}"/>
                                 <Button Content="Delete" 
                                         Name="serverDeleteMessageButton"
                                         VerticalAlignment="Center" 
                                         Margin="5,0,0,0" 
                                         Padding="5,3" 
                                         VerticalContentAlignment="Center"
-                                        HorizontalAlignment="Right"/>
+                                        HorizontalAlignment="Right"
+                                        Style="{StaticResource MainButtonStyle}"/>
                             </StackPanel>
                         </StackPanel>
 
@@ -151,10 +157,162 @@
                 </TabItem>
 
                 <TabItem Header="TCP Client" Background="LightSteelBlue">
-                    <Grid Background="#FFE5E5E5"/>
+                    <Grid>
+                        <StackPanel Orientation="Vertical" Margin="5" Background="White">
+                            <TextBlock Name="clientIntroTextBlock" 
+                                       Text="Connect to a TCP server with the specified IP address and port."
+                                       TextAlignment="Left"
+                                       Margin="0,3"
+                                       TextWrapping="Wrap"></TextBlock>
+                            <Label Content="Server configuration:" Padding="0,3,0,5"/>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                                <Label Content="IP-Address:" VerticalAlignment="Center" Padding="0,0,5,0"/>
+                                <TextBox Name="clientIpTextBox" 
+                                         Text="255.255.255.255" 
+                                         Padding="3"
+                                         Style="{StaticResource MainBoxStyle}"
+                                         Width="120" TextWrapping="NoWrap" AcceptsReturn="False" VerticalAlignment="Center"/>
+                                <Label Content="Port:" VerticalAlignment="Center"/>
+                                <TextBox Name="clientPortTextBox" 
+                                         Style="{StaticResource MainBoxStyle}"
+                                         Text="65000" 
+                                         Padding="3"
+                                         Width="60" 
+                                         TextWrapping="NoWrap" 
+                                         AcceptsReturn="False" 
+                                         VerticalAlignment="Center"/>
+                                
+                                <Button Content="Connect" 
+                                        Name="clientConnectButton"
+                                        VerticalAlignment="Center" 
+                                        Margin="5,0,0,0" 
+                                        Padding="5,3" 
+                                        VerticalContentAlignment="Center"
+                                        Style="{StaticResource MainButtonStyle}">
+                                </Button>
+
+                            </StackPanel>
+                            <Label Content="Log:" FontSize="12"></Label>
+                            <Border Name="scrollBorder2"
+                                    BorderThickness="0">
+
+                                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                              Name="clientLogScrollViewer"
+                                              Padding="1"
+                                              Height="150"
+                                              ClipToBounds="True"
+                                              Style="{StaticResource SvStyle}"/>
+                            </Border>
+                            <Button Content="Clear log" 
+                                    Name="clientClearLogButton"
+                                    Padding="5,3"
+                                    Margin="0, 2,0,0"
+                                    Style="{StaticResource MainButtonStyle}"/>
+
+                            <Label Content="User input:" FontSize="12"></Label>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <TextBox Name="clientMessageTextBox"
+                                         Margin="0,3"
+                                         Padding="3"
+                                         TextWrapping="NoWrap" 
+                                         AcceptsReturn="False" 
+                                         Width="325"
+                                         Style="{StaticResource MainBoxStyle}"/>
+                                <Button Content="Send" 
+                                        Name="clientSendMessageButton"
+                                        VerticalAlignment="Center" 
+                                        Margin="5,0,0,0" 
+                                        Padding="5,3" 
+                                        VerticalContentAlignment="Center"
+                                        HorizontalAlignment="Right"
+                                        Style="{StaticResource MainButtonStyle}"/>
+                                <Button Content="Delete" 
+                                        Name="clientDeleteMessageButton"
+                                        VerticalAlignment="Center" 
+                                        Margin="5,0,0,0" 
+                                        Padding="5,3" 
+                                        VerticalContentAlignment="Center"
+                                        HorizontalAlignment="Right"
+                                        Style="{StaticResource MainButtonStyle}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                    </Grid>
                 </TabItem>
-                <TabItem Header="{StaticResource tcpServerTab}" Background="LightSteelBlue">
-                    <Grid Background="#FFE5E5E5"/>
+                <TabItem Header="UDP" Background="LightSteelBlue">
+                    <Grid>
+                        <StackPanel Orientation="Vertical" Margin="5" Background="White">
+                            <TextBlock Name="udpIntroTextBlock" 
+                                       Text="Connect to a TCP server with the specified IP address and port."
+                                       TextAlignment="Left"
+                                       Margin="0,3"
+                                       TextWrapping="Wrap"></TextBlock>
+                            <Label Content="Server configuration:" Padding="0,3,0,5"/>
+                            
+                            <Label Content="Log:" FontSize="12"></Label>
+                            <Border Name="scrollBorder3"
+                                    BorderThickness="0">
+
+                                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                              Name="UdpLogScrollViewer"
+                                              Padding="1"
+                                              Height="150"
+                                              ClipToBounds="True"
+                                              Style="{StaticResource SvStyle}"/>
+                            </Border>
+                            <Button Content="Clear log" 
+                                    Name="UdpClearLogButton"
+                                    Padding="5,3"
+                                    Margin="0, 2,0,0"
+                                    Style="{StaticResource MainButtonStyle}"/>
+                            <Label Content="Send message to:"/>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                                <Label Content="IP-Address:" VerticalAlignment="Center" Padding="0,0,5,0"/>
+                                <TextBox Name="UdpDestinationIpTextBox" 
+                                         Text="255.255.255.255" 
+                                         Padding="3"
+                                         Style="{StaticResource MainBoxStyle}"
+                                         Width="120" TextWrapping="NoWrap" AcceptsReturn="False" VerticalAlignment="Center"/>
+                                <Label Content="Port:" VerticalAlignment="Center"/>
+                                <TextBox Name="UdpDestinationPortTextBox" 
+                                         Style="{StaticResource MainBoxStyle}"
+                                         Text="65000" 
+                                         Padding="3"
+                                         Width="60" 
+                                         TextWrapping="NoWrap" 
+                                         AcceptsReturn="False" 
+                                         VerticalAlignment="Center"/>
+
+                            </StackPanel>
+                            <Label Content="Message:"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <TextBox Name="UdpMessageTextBox"
+                                         Margin="0,3"
+                                         Padding="3"
+                                         TextWrapping="NoWrap" 
+                                         AcceptsReturn="False" 
+                                         Width="325"
+                                         Style="{StaticResource MainBoxStyle}"/>
+                                <Button Content="Send" 
+                                        Name="UdpSendMessageButton"
+                                        VerticalAlignment="Center" 
+                                        Margin="5,0,0,0" 
+                                        Padding="5,3" 
+                                        VerticalContentAlignment="Center"
+                                        HorizontalAlignment="Right"
+                                        Style="{StaticResource MainButtonStyle}"/>
+                                <Button Content="Delete" 
+                                        Name="UdpDeleteMessageButton"
+                                        VerticalAlignment="Center" 
+                                        Margin="5,0,0,0" 
+                                        Padding="5,3" 
+                                        VerticalContentAlignment="Center"
+                                        HorizontalAlignment="Right"
+                                        Style="{StaticResource MainButtonStyle}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                    </Grid>
                 </TabItem>
             </TabControl>
         </Grid>
