@@ -37,5 +37,54 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="SvStyle" TargetType="ScrollViewer">
+        <Setter Property="OverridesDefaultStyle" Value="True"></Setter>
+        <Setter Property="VerticalScrollBarVisibility" Value="Visible"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollViewer">
+                    <Grid ClipToBounds="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border CornerRadius="4,0,0,4" 
+                                    Grid.Row="0" 
+                                    Grid.Column="0"
+                                    Padding="2"
+                                    BorderThickness="1,1,1,1"
+                                    BorderBrush="{StaticResource BasicBlue}"
+                                    Name="svBorder">
+                            <ScrollContentPresenter 
+                                Content="{TemplateBinding ScrollViewer.Content}" 
+                                ClipToBounds="True" >
+                            </ScrollContentPresenter>
+
+                        </Border>
+                        <ScrollBar Orientation="Vertical" Grid.Row="0" Grid.Column="1"
+                                       Minimum="0" 
+                                       Maximum="{TemplateBinding ScrollViewer.ScrollableHeight}"
+                                       Value="{TemplateBinding ScrollViewer.VerticalOffset}" 
+                                       ViewportSize="{TemplateBinding ScrollViewer.ViewportHeight}"
+                                       ClipToBounds="True"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="MainBoxStyle" TargetType="{x:Type TextBox}">
+        <Setter Property="BorderBrush" Value="{StaticResource BasicBlue}"/>
+        <Setter Property="BorderThickness" Value="1"></Setter>
+        <Style.Resources>
+            <Style TargetType="{x:Type Border}">
+                <Setter Property="CornerRadius" Value="4" />
+            </Style>
+        </Style.Resources>
+    </Style>
+
 
 </ResourceDictionary>

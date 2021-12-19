@@ -20,12 +20,12 @@ namespace SocketTest.StaticLogs
         /// <returns></returns>
         public static async Task AddRecordAsync(string record)
         {
-            Log.Add(record);
+            await Task.Run(()=>Log.Add(record));
         }
 
         public static async Task Reset()
         {
-            Log = new List<string>() { "" };
+            await Task.Run(()=>Log = new List<string>() { "" });
         }
     }
 }

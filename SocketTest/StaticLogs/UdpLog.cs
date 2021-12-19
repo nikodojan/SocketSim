@@ -12,7 +12,7 @@ namespace SocketTest.StaticLogs
 
         public static async Task AddRecordAsync(string record)
         {
-            Log.Add(record);
+            Log.Add(record + "\r\n");
         }
 
         public static async Task Reset()

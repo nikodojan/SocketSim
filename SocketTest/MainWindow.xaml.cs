@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using SocketTest.Helpers;
 using SocketTest.Models;
 using SocketTest.Resources;
 using SocketTest.Sockets;
@@ -122,7 +123,7 @@ namespace SocketTest
         /// </summary>
         public async void OnStartServerButtonClick()
         {
-            var output = ParseEndpoint(serverIpTextBox.Text, serverPortTextBox.Text);
+            var output = ParsingHelper.ParseEndpoint(serverIpTextBox.Text, serverPortTextBox.Text);
             await StartTcpServer(output);
         }
 
@@ -219,7 +220,7 @@ namespace SocketTest
             UdpLogTextBox.Background = Brushes.White;
             UdpLogTextBox.TextWrapping = TextWrapping.Wrap;
 
-            UdpLogScrollViewer.Content = serverLogTextBox;
+            UdpLogScrollViewer.Content = UdpLogTextBox;
             UdpLogScrollViewer.Height = 150;
             UdpLogScrollViewer.Background = Brushes.White;
 
@@ -227,6 +228,7 @@ namespace SocketTest
             UdpSendMessageButton.Click += UdpSendMessageButton_Click;
             UdpDeleteMessageButton.Click += (object sender, RoutedEventArgs e) => { UdpMessageTextBox.Text = ""; };
             _udpClient.LogChanged += OnUdpLogChanged;
+            
         }
 
 
@@ -237,14 +239,19 @@ namespace SocketTest
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-
         private async void UdpSendMessageButton_Click(object sender, RoutedEventArgs e)
         {
-            var endPoint = ParseEndpoint(UdpDestinationIpTextBox.Text, UdpDestinationPortTextBox.Text);
+            var endPoint = ParsingHelper.ParseEndpoint(UdpDestinationIpTextBox.Text, UdpDestinationPortTextBox.Text);
             if (endPoint != null)
+            {
                 await _udpClient.SendAsync(endPoint, UdpMessageTextBox.Text);
+                UdpMessageTextBox.Text = "";
+            }
         }
 
+        /// <summary>
+        /// Event handler to update the log text after the event was invoked.
+        /// </summary>
         private void OnUdpLogChanged(object sender, EventArgs e)
         {
             UdpLogTextBox.Text += UdpLog.Log[^1];
@@ -255,41 +262,5 @@ namespace SocketTest
 
         #endregion
 
-
-
-
-        /// <summary>
-        /// Parses the entered IP address and port to IPEndPoint.
-        /// </summary>
-        /// <param name="ipInput">IP addresses to be parsed</param>
-        /// <param name="portInput">Port number to be parsed</param>
-        /// <returns>An instance of an IPEndPoint with the entered parameters or <see langword="null"/> if the entered values are invalid. </returns>
-        private IPEndPoint ParseEndpoint(string ipInput, string portInput)
-        {
-            bool ipParsed = IPAddress.TryParse(serverIpTextBox.Text, out IPAddress ip);
-            if (!ipParsed)
-                MessageBox.Show("IP Address has invalid format.", "Input error");
-
-
-            bool portParsed = Int32.TryParse(serverPortTextBox.Text, out int port);
-            if (!portParsed)
-                MessageBox.Show("Port has invalid format.", "Input error");
-
-            bool portIsValid = true;
-            if (port < 0 || port > 65535)
-            {
-                MessageBox.Show("Invalid port number.\r\n" +
-                                "The port number must be between 0 and 65535", "Input error");
-                portIsValid = false;
-            }
-
-            if (ipParsed && portParsed && portIsValid)
-            {
-                //Endpoint ep = new Endpoint(serverIpTextBox.Text, port);
-                IPEndPoint endPoint = new IPEndPoint(ip, port);
-                return endPoint;
-            }
-            return null;
-        }
     }
 }
