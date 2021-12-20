@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
-namespace SocketTest.Helpers
+namespace SocketSim.Helpers
 {
     internal static class ParsingHelper
     {

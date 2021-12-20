@@ -3,10 +3,9 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using SocketTest.Models;
-using SocketTest.StaticLogs;
+using SocketSim.StaticLogs;
 
-namespace SocketTest.Sockets
+namespace SocketSim.Sockets
 {
     /// <summary>
     /// Class that handles the Tcp server.

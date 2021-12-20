@@ -1,11 +1,10 @@
-﻿<Window x:Class="SocketTest.MainWindow"
+﻿<Window x:Class="SocketSim.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SocketTest"
         mc:Ignorable="d"
-        Title="Socket Test" Height="500" Width="600"
+        Title="SocketSim - Test your sockets" Height="500" Width="600"
         FontWeight="Light">
     <Window.Resources>
         <SolidColorBrush x:Key="BasicBlue" Color="#0086dc"/>
@@ -113,29 +112,40 @@
                             </StackPanel>
                             </StackPanel>
                         </GroupBox>
+                        <Grid Grid.Row="1" Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Vertical" Margin="5" Background="White">
 
-                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="5" Background="White">
-                            
-                            <Label Content="Log:"></Label>
-                            <Border Name="scrollBorder"
-                                    BorderThickness="0">
+                                <Label Content="Log:"></Label>
+                                <Border Name="scrollBorder"
+                                        BorderThickness="0">
+
+                                    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                                  Name="serverLogScrollViewer"
+                                                  Padding="1"
+                                                  Height="150"
+                                                  ClipToBounds="True"
+                                                  Style="{StaticResource SvStyle}"/>
+                                </Border>
+                                <Button Content="Clear log" 
+                                        Name="serverClearLogButton"
+                                        Padding="5,3"
+                                        Margin="0, 2,0,0"
+                                        Style="{StaticResource MainButtonStyle}"/>
                                 
-                                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                                              Name="serverLogScrollViewer"
-                                              Padding="1"
-                                              Height="150"
-                                              ClipToBounds="True"
-                                              Style="{StaticResource SvStyle}"/>
-                            </Border>
-                        <Button Content="Clear log" 
-                                    Name="serverClearLogButton"
-                                    Padding="5,3"
-                                    Margin="0, 2,0,0"
-                                    Style="{StaticResource MainButtonStyle}"/>
 
-                            
+                            </StackPanel>
+                            <Image Grid.Row="1" Name="LogoInServerTab"
+                                   Source="Resources/Images/TextLogo.png"
+                                   VerticalAlignment="Bottom"
+                                   HorizontalAlignment="Right" 
+                                   Height="75"
+                                   Margin="10,0"/>
 
-                        </StackPanel>
+                        </Grid>
 
                     </Grid>
                 </TabItem>

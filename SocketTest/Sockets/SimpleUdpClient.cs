@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using SocketTest.StaticLogs;
+using SocketSim.StaticLogs;
 
-namespace SocketTest.Sockets
+namespace SocketSim.Sockets
 {
     public class SimpleUdpClient
     {
@@ -32,27 +29,50 @@ namespace SocketTest.Sockets
 
         public async Task StartListening(IPEndPoint endPoint)
         {
-            _listener = new UdpClient();
-            _listener.Client.Bind(endPoint);
-            Task.Run(() => ListenToUdp());
+            try
+            {
+                _listener = new UdpClient();
+                _listener.Client.Bind(endPoint);
+                //Task.Run(() => ListenToUdp());
+                await ListenToUdp();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("StartListening method: "+ e.Message);
+            }
         }
 
         private async Task ListenToUdp()
         {
-            await UdpLog.AddRecordAsync("Started\r\n");
-            LogChanged?.Invoke(this, EventArgs.Empty);
-
-            while (true)
+            try
             {
-                IPEndPoint from = null;
-                byte[] receivedData = _listener.Receive(ref from);
-                string message = Encoding.UTF8.GetString(receivedData);
-                string logString = $"{DateTime.Now} \r\n" +
-                                   $"Received from: {from.Address}:{from.Port} \r\n" +
-                                   $"{message}\r\n";
-                await UdpLog.AddRecordAsync(logString);
+                await UdpLog.AddRecordAsync("UDP listener started\r\n");
                 LogChanged?.Invoke(this, EventArgs.Empty);
+
+                while (true)
+                {
+                    IPEndPoint from = null;
+                    //byte[] receivedData = await _listener.ReceiveAsync();
+                    var datagram = await _listener.ReceiveAsync();
+                    
+                    //string message = Encoding.UTF8.GetString(receivedData);
+                    string message = Encoding.UTF8.GetString(datagram.Buffer);
+                    from = datagram.RemoteEndPoint;
+
+                    string logString = $"{DateTime.Now} \r\n" +
+                                       $"Received from: {from.Address}:{from.Port} \r\n" +
+                                       $"{message}\r\n";
+                    await UdpLog.AddRecordAsync(logString);
+                    LogChanged?.Invoke(this, EventArgs.Empty);
+                }
             }
+            catch (Exception e)
+            {
+                MessageBox.Show("ListenToUpd method: " + e.Message);
+                _listener?.Client?.Close();
+                _listener?.Dispose();
+            }
+            
         }
 
         public async Task StopListening()
@@ -68,7 +88,7 @@ namespace SocketTest.Sockets
             }
             finally
             {
-                await UdpLog.AddRecordAsync("Stopped\r\n");
+                await UdpLog.AddRecordAsync("UDP listener stopped\r\n");
                 LogChanged?.Invoke(this, EventArgs.Empty);
             }
         }
