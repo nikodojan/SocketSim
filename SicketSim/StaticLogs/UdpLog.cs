@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SocketTest.StaticLogs
+namespace SocketSim.StaticLogs
 {
     public class UdpLog
     {
@@ -12,7 +9,7 @@ namespace SocketTest.StaticLogs
 
         public static async Task AddRecordAsync(string record)
         {
-            Log.Add(record);
+            Log.Add(record + "\r\n");
         }
 
         public static async Task Reset()

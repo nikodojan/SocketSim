@@ -1,24 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using SocketTest.Models;
-using SocketTest.Resources;
-using SocketTest.Sockets;
-using SocketTest.StaticLogs;
+using SocketSim.Helpers;
+using SocketSim.Sockets;
+using SocketSim.StaticLogs;
 
-namespace SocketTest
+namespace SocketSim
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -27,6 +17,8 @@ namespace SocketTest
     {
         private const string StartServerButtonLabel = "Start server";
         private const string StopServerButtonLabel = "Stop server";
+        private const string StartUdpListenerButtonLabel = "Start listening";
+        private const string StopUdpListenerButtonLabel = "Stop listening";
 
         private TextBlock serverLogTextBox;
         private TextBlock UdpLogTextBox;
@@ -86,8 +78,8 @@ namespace SocketTest
         {
             _server = new SimpleTcpServer(ep);
             _server.LogChanged += OnServerLogChanged;
-            _server.ServerStarted += SwitchControlsOnStart;
-            _server.ServerStopped += SwitchControlsOnStop;
+            _server.ServerStarted += SwitchServerControlsOnStart;
+            _server.ServerStopped += SwitchServerControlsOnStop;
             await _server.StartListener();
         }
 
@@ -122,8 +114,8 @@ namespace SocketTest
         /// </summary>
         public async void OnStartServerButtonClick()
         {
-            var output = ParseEndpoint(serverIpTextBox.Text, serverPortTextBox.Text);
-            await StartTcpServer(output);
+            var parsedEndpoint = ParsingHelper.ParseEndpoint(serverIpTextBox.Text, serverPortTextBox.Text);
+            await StartTcpServer(parsedEndpoint);
         }
 
         public async void OnStopServerButtonClick()
@@ -137,7 +129,7 @@ namespace SocketTest
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SwitchControlsOnStart(object sender, EventArgs e)
+        private void SwitchServerControlsOnStart(object sender, EventArgs e)
         {
             serverIpTextBox.IsEnabled = false;
             serverPortTextBox.IsEnabled = false;
@@ -151,7 +143,7 @@ namespace SocketTest
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SwitchControlsOnStop(object sender, EventArgs e)
+        private void SwitchServerControlsOnStop(object sender, EventArgs e)
         {
             serverIpTextBox.IsEnabled = true;
             serverPortTextBox.IsEnabled = true;
@@ -210,8 +202,11 @@ namespace SocketTest
             _udpClient = new SimpleUdpClient();
 
             UdpDestinationIpTextBox.Text = "255.255.255.255";
-            UdpDestinationPortTextBox.Text = "65535";
+            UdpDestinationPortTextBox.Text = "65000";
             UdpMessageTextBox.Text = "";
+
+            UdpListenerIpTextBox.Text = "127.0.0.1";
+            UdpListenerPortTextBox.Text = "65000";
 
             // log text block and scroll viewer
             UdpLogTextBox = new TextBlock();
@@ -219,14 +214,47 @@ namespace SocketTest
             UdpLogTextBox.Background = Brushes.White;
             UdpLogTextBox.TextWrapping = TextWrapping.Wrap;
 
-            UdpLogScrollViewer.Content = serverLogTextBox;
+            UdpLogScrollViewer.Content = UdpLogTextBox;
             UdpLogScrollViewer.Height = 150;
             UdpLogScrollViewer.Background = Brushes.White;
+
+            UdpStartListeningButton.Content = StartUdpListenerButtonLabel;
 
             //event handler
             UdpSendMessageButton.Click += UdpSendMessageButton_Click;
             UdpDeleteMessageButton.Click += (object sender, RoutedEventArgs e) => { UdpMessageTextBox.Text = ""; };
             _udpClient.LogChanged += OnUdpLogChanged;
+
+            UdpStartListeningButton.Click += UdpStartListeningButton_Click;
+            
+        }
+
+        private void UdpStartListeningButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (UdpStartListeningButton.Content.ToString() == StartUdpListenerButtonLabel)
+            {
+                OnStartUdpListener();
+            }
+            else if (UdpStartListeningButton.Content.ToString() == StopUdpListenerButtonLabel)
+            {
+                OnStopUdpListener();
+            }
+        }
+
+        private async Task OnStartUdpListener()
+        {
+            var endPoint = ParsingHelper.ParseEndpoint(UdpListenerIpTextBox.Text, UdpListenerPortTextBox.Text);
+            if (endPoint != null)
+            {
+                _udpClient.StartListening(endPoint);
+                UdpStartListeningButton.Content = StopUdpListenerButtonLabel;
+            }
+        }
+
+        private async Task OnStopUdpListener()
+        {
+            await _udpClient.StopListening();
+            UdpStartListeningButton.Content = StartUdpListenerButtonLabel;
         }
 
 
@@ -237,14 +265,19 @@ namespace SocketTest
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-
         private async void UdpSendMessageButton_Click(object sender, RoutedEventArgs e)
         {
-            var endPoint = ParseEndpoint(UdpDestinationIpTextBox.Text, UdpDestinationPortTextBox.Text);
+            var endPoint = ParsingHelper.ParseEndpoint(UdpDestinationIpTextBox.Text, UdpDestinationPortTextBox.Text);
             if (endPoint != null)
+            {
                 await _udpClient.SendAsync(endPoint, UdpMessageTextBox.Text);
+                UdpMessageTextBox.Text = "";
+            }
         }
 
+        /// <summary>
+        /// Event handler to update the log text after the event was invoked.
+        /// </summary>
         private void OnUdpLogChanged(object sender, EventArgs e)
         {
             UdpLogTextBox.Text += UdpLog.Log[^1];
@@ -255,41 +288,5 @@ namespace SocketTest
 
         #endregion
 
-
-
-
-        /// <summary>
-        /// Parses the entered IP address and port to IPEndPoint.
-        /// </summary>
-        /// <param name="ipInput">IP addresses to be parsed</param>
-        /// <param name="portInput">Port number to be parsed</param>
-        /// <returns>An instance of an IPEndPoint with the entered parameters or <see langword="null"/> if the entered values are invalid. </returns>
-        private IPEndPoint ParseEndpoint(string ipInput, string portInput)
-        {
-            bool ipParsed = IPAddress.TryParse(serverIpTextBox.Text, out IPAddress ip);
-            if (!ipParsed)
-                MessageBox.Show("IP Address has invalid format.", "Input error");
-
-
-            bool portParsed = Int32.TryParse(serverPortTextBox.Text, out int port);
-            if (!portParsed)
-                MessageBox.Show("Port has invalid format.", "Input error");
-
-            bool portIsValid = true;
-            if (port < 0 || port > 65535)
-            {
-                MessageBox.Show("Invalid port number.\r\n" +
-                                "The port number must be between 0 and 65535", "Input error");
-                portIsValid = false;
-            }
-
-            if (ipParsed && portParsed && portIsValid)
-            {
-                //Endpoint ep = new Endpoint(serverIpTextBox.Text, port);
-                IPEndPoint endPoint = new IPEndPoint(ip, port);
-                return endPoint;
-            }
-            return null;
-        }
     }
 }

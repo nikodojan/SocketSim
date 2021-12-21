@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SocketTest.StaticLogs
+namespace SocketSim.StaticLogs
 {
     /// <summary>
     /// Static log class to temporarily hold the server output messages.
@@ -20,12 +17,12 @@ namespace SocketTest.StaticLogs
         /// <returns></returns>
         public static async Task AddRecordAsync(string record)
         {
-            Log.Add(record);
+            await Task.Run(()=>Log.Add(record));
         }
 
         public static async Task Reset()
         {
-            Log = new List<string>() { "" };
+            await Task.Run(()=>Log = new List<string>() { "" });
         }
     }
 }

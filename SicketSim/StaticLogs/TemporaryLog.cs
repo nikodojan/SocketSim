@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SocketTest.StaticLogs
+namespace SocketSim.StaticLogs
 {
     public class TemporaryLog
     {
