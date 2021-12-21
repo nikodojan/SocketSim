@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="SocketSim - Test your sockets" Height="500" Width="600"
+        Icon="Resources/Images/logo.ico"
         FontWeight="Light">
     <Window.Resources>
         <SolidColorBrush x:Key="BasicBlue" Color="#0086dc"/>
@@ -277,10 +278,12 @@
                         </GroupBox>
 
                         <!--UDP log-->
-                        
-                            <StackPanel   Grid.Row="1" Grid.Column="1"
-                                          Orientation="Vertical" 
-                                          Margin="5" Background="White">
+                        <Grid Grid.Row="1" Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Vertical" Margin="5" Background="White">
                             
                             <Label Content="Log:"/>
                             <Border Name="scrollBorder3"
@@ -300,7 +303,13 @@
                                     Style="{StaticResource MainButtonStyle}"/>
                             
                         </StackPanel>
-                        
+                            <Image Grid.Row="1" Name="LogoInUdpTab"
+                                   Source="Resources/Images/TextLogo.png"
+                                   VerticalAlignment="Bottom"
+                                   HorizontalAlignment="Right" 
+                                   Height="75"
+                                   Margin="10,0"/>
+                        </Grid>
 
 
                     </Grid>
