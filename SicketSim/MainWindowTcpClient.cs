@@ -7,9 +7,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using SocketSim.Sockets;
+using SocketSim.StaticLogs;
 
 namespace SocketSim
 {
+    /// <summary>
+    /// Partial class that handles the TCP client tab in the UI.
+    /// </summary>
     public partial class MainWindow : Window
     {
         private const string ClientConnectButtonLabel = "Connect";
@@ -46,12 +50,26 @@ namespace SocketSim
             ClientMessageTextBox.IsEnabled = false;
             ClientSendMessageButton.IsEnabled = false;
             ClientDeleteMessageButton.IsEnabled = false;
+
+            ClientSendMessageButton.Click += ClientSendMessageButton_Click;
+            ClientDeleteMessageButton.Click += ClientDeleteMessageButton_Click;
+        }
+
+        private void ClientDeleteMessageButton_Click(object sender, RoutedEventArgs e)
+        {
+            ClientMessageTextBox.Text = "";
+        }
+
+        private void ClientSendMessageButton_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
         #endregion
 
-        private void ClientClearLogButton_Click(object sender, RoutedEventArgs e)
+        private async void ClientClearLogButton_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            ClientLogTextBox.Text = "";
+            await TcpClientLog.ResetAsync();
         }
 
         private void ClientConnectButton_Click(object sender, RoutedEventArgs e)

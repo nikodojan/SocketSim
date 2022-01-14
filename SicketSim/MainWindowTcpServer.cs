@@ -13,6 +13,9 @@ using SocketSim.StaticLogs;
 
 namespace SocketSim
 {
+    /// <summary>
+    /// Partial class that handles the TCP server tab in the UI.
+    /// </summary>
     public partial class MainWindow : Window
     {
         private const string StartServerButtonLabel = "Start server";

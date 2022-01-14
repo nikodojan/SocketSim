@@ -19,7 +19,7 @@ namespace SocketSim.StaticLogs
             await Task.Run(() => Log.Add(record));
         }
 
-        public static async Task Reset()
+        public static async Task ResetAsync()
         {
             await Task.Run(() => Log = new List<string>() { "" });
         }
