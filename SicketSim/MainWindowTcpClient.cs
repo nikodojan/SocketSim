@@ -1,0 +1,89 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using SocketSim.Sockets;
+
+namespace SocketSim
+{
+    public partial class MainWindow : Window
+    {
+        private const string ClientConnectButtonLabel = "Connect";
+        private const string ClientDisconnectButtonLabel = "Disconnect";
+
+        private TextBlock ClientLogTextBox;
+
+        private SimpleTcpClient _client;
+
+        #region TCP CLIENT TAB : Contains all TCP client related methods
+        /// <summary>
+        /// Initializes the UI controls in the TCP client tab.
+        /// </summary>
+        private void InitializeTcpClientTab()
+        {
+            ClientIpTextBox.Text = "127.0.0.0";
+            ClientPortTextBox.Text = "4646";
+
+            // log text block and scroll viewer
+            ClientLogTextBox = new TextBlock();
+            ClientLogTextBox.FontSize = 12;
+            ClientLogTextBox.Background = Brushes.White;
+            ClientLogTextBox.TextWrapping = TextWrapping.Wrap;
+
+            ClientLogScrollViewer.Content = serverLogTextBox;
+            ClientLogScrollViewer.Height = 150;
+            ClientLogScrollViewer.Background = Brushes.White;
+
+            ClientClearLogButton.Click += ClientClearLogButton_Click;
+
+            ClientConnectButton.Click += ClientConnectButton_Click;
+            ClientConnectButton.Content = ClientConnectButtonLabel;
+
+            ClientMessageTextBox.IsEnabled = false;
+            ClientSendMessageButton.IsEnabled = false;
+            ClientDeleteMessageButton.IsEnabled = false;
+        }
+        #endregion
+
+        private void ClientClearLogButton_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ClientConnectButton_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void SwitchClientControls_OnConnect(object sender, EventArgs e)
+        {
+            ClientConnectButton.Content = ClientDisconnectButtonLabel;
+            ClientIpTextBox.IsEnabled = false;
+            ClientPortTextBox.IsEnabled = false;
+
+            ClientMessageTextBox.IsEnabled = true;
+            ClientSendMessageButton.IsEnabled = true;
+            ClientDeleteMessageButton.IsEnabled = true;
+        }
+
+        private void SwitchClientControls_OnDisconnect(object sender, EventArgs e)
+        {
+            ClientConnectButton.Content = ClientConnectButtonLabel;
+            ClientIpTextBox.IsEnabled = true;
+            ClientPortTextBox.IsEnabled = true;
+
+            ClientMessageTextBox.IsEnabled = false;
+            ClientSendMessageButton.IsEnabled = false;
+            ClientDeleteMessageButton.IsEnabled = false;
+        }
+
+        public async Task Connect()
+        {
+            _client = new SimpleTcpClient();
+        }
+    }
+}

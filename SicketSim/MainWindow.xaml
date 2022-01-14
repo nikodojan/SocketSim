@@ -153,7 +153,133 @@
 
                 <!--TCP Client tab-->
                 <TabItem Header="TCP Client" Background="LightSteelBlue">
-                    
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Name="ClientIntroTextBlock" 
+                                   Text="Establish a connection to a TCP server."
+                                   TextAlignment="Left"
+                                   Margin="0,3"
+                                   TextWrapping="Wrap"
+                                   Grid.Row="0" Grid.ColumnSpan="2"></TextBlock>
+
+                        <GroupBox Grid.Row="1" Grid.Column="0"
+                                  Header="TCP Client">
+                            <!--Server stack-->
+                            <StackPanel Name="ClientConfigurationStack" 
+                                    
+                                    Orientation="Vertical"
+                                    Margin="5">
+                                <Label Content="Connect to server:" Padding="0,3,0,5"/>
+
+                                <StackPanel Name="ClientIpAddressStack" 
+                                        Orientation="Horizontal"
+                                        Margin="0,5">
+                                    <Label Content="IP-Address:" VerticalAlignment="Center" Padding="0,0,5,0"/>
+                                    <TextBox Name="ClientIpTextBox" 
+                                         Text="255.255.255.255" 
+                                         
+                                         Padding="3"
+                                         Style="{StaticResource MainBoxStyle}"
+                                         Width="120" TextWrapping="NoWrap" AcceptsReturn="False" VerticalAlignment="Center"/>
+
+                                </StackPanel>
+
+                                <StackPanel Name="ClientPortPanel" 
+                                        Orientation="Horizontal"
+                                        Margin="0,5">
+                                    <Label Content="Port:" VerticalAlignment="Center" Padding="0"/>
+                                    <TextBox Name="ClientPortTextBox" 
+                                         Style="{StaticResource MainBoxStyle}"
+                                         Text="65000" 
+                                         Padding="3"
+                                         Width="60" 
+                                         TextWrapping="NoWrap" 
+                                         AcceptsReturn="False" 
+                                         VerticalAlignment="Center"
+                                         Margin="5,0"/>
+                                    
+                                </StackPanel>
+                                <Button Content="Connect" 
+                                    Name="ClientConnectButton"
+                                    VerticalAlignment="Center" 
+                                    Margin="5" 
+                                    Padding="5,3" 
+                                    Width="90"
+                                    VerticalContentAlignment="Center"
+                                    Style="{StaticResource MainButtonStyle}">
+                                </Button>
+                                <Separator/>
+                                <Label Content="Send message:"></Label>
+                                <TextBox Name="ClientMessageTextBox"
+                                     Margin="0,3"
+                                     Padding="3"
+                                     TextWrapping="NoWrap" 
+                                     AcceptsReturn="False" 
+                                     Width="Auto"
+                                     Style="{StaticResource MainBoxStyle}"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                    <Button Content="Send" 
+                                        Name="ClientSendMessageButton"
+                                        VerticalAlignment="Center" 
+                                        Margin="5,0,0,0" 
+                                        Padding="5,3" 
+                                        VerticalContentAlignment="Center"
+                                        HorizontalAlignment="Right"
+                                        Style="{StaticResource MainButtonStyle}"/>
+                                    <Button Content="Delete" 
+                                        Name="ClientDeleteMessageButton"
+                                        VerticalAlignment="Center" 
+                                        Margin="5,0,0,0" 
+                                        Padding="5,3" 
+                                        VerticalContentAlignment="Center"
+                                        HorizontalAlignment="Right"
+                                        Style="{StaticResource MainButtonStyle}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+                        <Grid Grid.Row="1" Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Vertical" Margin="5" Background="White">
+
+                                <Label Content="Log:"></Label>
+                                <Border Name="ClientScrollBorder"
+                                        BorderThickness="0">
+
+                                    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                                  Name="ClientLogScrollViewer"
+                                                  Padding="1"
+                                                  Height="150"
+                                                  ClipToBounds="True"
+                                                  Style="{StaticResource SvStyle}"/>
+                                </Border>
+                                <Button Content="Clear log" 
+                                        Name="ClientClearLogButton"
+                                        Padding="5,3"
+                                        Margin="0, 2,0,0"
+                                        Style="{StaticResource MainButtonStyle}"/>
+
+
+                            </StackPanel>
+                            <Image Grid.Row="1" Name="LogoInClientTab"
+                                   Source="Resources/Images/TextLogo.png"
+                                   VerticalAlignment="Bottom"
+                                   HorizontalAlignment="Right" 
+                                   Height="75"
+                                   Margin="10,0"/>
+
+                        </Grid>
+
+                    </Grid>
                 </TabItem>
                 <!--UDP tab-->
                 <TabItem Header="UDP" Background="LightSteelBlue">
