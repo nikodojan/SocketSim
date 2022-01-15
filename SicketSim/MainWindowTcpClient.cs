@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using SocketSim.Helpers;
 using SocketSim.Sockets;
 using SocketSim.StaticLogs;
 
@@ -74,7 +75,16 @@ namespace SocketSim
 
         private void ClientConnectButton_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            switch (ClientConnectButton.Content)
+            {
+                case "Connect":
+                    Connect();
+                    SwitchClientControls_OnConnect(this, EventArgs.Empty);
+                    break;
+                case "Disconnect":
+                    SwitchClientControls_OnDisconnect(this, EventArgs.Empty);
+                    break;
+            };
         }
 
         private void SwitchClientControls_OnConnect(object sender, EventArgs e)
@@ -101,7 +111,9 @@ namespace SocketSim
 
         public async Task Connect()
         {
+            var endPoint = ParsingHelper.ParseEndpoint(ClientIpTextBox.Text, ClientPortTextBox.Text);
             _client = new SimpleTcpClient();
+
         }
     }
 }

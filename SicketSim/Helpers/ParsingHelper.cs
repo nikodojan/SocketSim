@@ -44,5 +44,46 @@ namespace SocketSim.Helpers
             }
             return null;
         }
+
+        /// <summary>
+        /// Parses the entered IP address and port to IPEndPoint.
+        /// </summary>
+        /// <param name="ipInput"></param>
+        /// <param name="portInput"></param>
+        /// <param name="endPoint"></param>
+        /// <returns>True if successfully parsed, else false.</returns>
+        public static bool TryParseEndpoint(string ipInput, string portInput, out IPEndPoint endPoint)
+        {
+            if (ipInput.ToLower() == "localhost")
+            {
+                ipInput = "127.0.0.1";
+            }
+
+            bool ipParsed = IPAddress.TryParse(ipInput, out IPAddress ip);
+            if (!ipParsed)
+                MessageBox.Show("IP Address has invalid format.", "Input error");
+
+
+            bool portParsed = Int32.TryParse(portInput, out int port);
+            if (!portParsed)
+                MessageBox.Show("Port has invalid format.", "Input error");
+
+            bool portIsValid = true;
+            if (port < 0 || port > 65535)
+            {
+                MessageBox.Show("Invalid port number.\r\n" +
+                                "The port number must be between 0 and 65535", "Input error");
+                portIsValid = false;
+            }
+
+            if (ipParsed && portParsed && portIsValid)
+            {
+                endPoint = new IPEndPoint(ip, port);
+                return true;
+            }
+
+            endPoint = null;
+            return false;
+        }
     }
 }

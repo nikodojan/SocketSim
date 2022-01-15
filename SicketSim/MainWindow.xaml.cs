@@ -19,9 +19,15 @@ namespace SocketSim
         {
             InitializeComponent();
             DataContext = this;
+            InitializeMenu();
             InitializeTcpServerTab();
             InitializeTcpClientTab();
             InitializeUdpTab();
+        }
+
+        private void InitializeMenu()
+        {
+            fileMenuExitButton.Click += (object sender, RoutedEventArgs e) => Application.Current.Shutdown();
         }
 
     }

@@ -52,7 +52,7 @@ namespace SocketSim
             serverLogScrollViewer.Height = 150;
             serverLogScrollViewer.Background = Brushes.White;
 
-            fileMenuExitButton.Click += (object sender, RoutedEventArgs e) => Application.Current.Shutdown();
+            
 
             serverMessageTextBox.Text = "";
             serverSendMessageButton.Click += ServerSendMessageButton_Click;
