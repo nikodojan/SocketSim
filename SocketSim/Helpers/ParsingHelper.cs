@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Net;
 using System.Windows;
+using SocketSim.Exceptions;
 
 namespace SocketSim.Helpers
 {
-    internal static class ParsingHelper
+    public static class ParsingHelper
     {
         /// <summary>
         /// Parses the entered IP address and port to IPEndPoint.
@@ -22,6 +23,7 @@ namespace SocketSim.Helpers
             bool ipParsed = IPAddress.TryParse(ipInput, out IPAddress ip);
             if (!ipParsed)
                 MessageBox.Show("IP Address has invalid format.", "Input error");
+                
 
 
             bool portParsed = Int32.TryParse(portInput, out int port);
@@ -46,44 +48,28 @@ namespace SocketSim.Helpers
         }
 
         /// <summary>
-        /// Parses the entered IP address and port to IPEndPoint.
+        /// Parses the entered IP address and port from String to IPEndPoint.
         /// </summary>
-        /// <param name="ipInput"></param>
+        /// <param name="ipInput">'IP address' or 'localhost' in string format</param>
         /// <param name="portInput"></param>
         /// <param name="endPoint"></param>
-        /// <returns>True if successfully parsed, else false.</returns>
-        public static bool TryParseEndpoint(string ipInput, string portInput, out IPEndPoint endPoint)
+        /// <returns>The parsed IP endpoint</returns>
+        /// <exception cref="System.ArgumentException">When IP address or port can not be parsed, e.g. have invalid format; or when port is out of range.</exception>
+        public static IPEndPoint TryParseEndpoint(string ipInput, string portInput)
         {
-            if (ipInput.ToLower() == "localhost")
-            {
-                ipInput = "127.0.0.1";
-            }
+            if (ipInput.ToLower() == "localhost") ipInput = "127.0.0.1";
+            
+            if (!IPAddress.TryParse(ipInput, out IPAddress ip))
+                throw new EndPointParserException("Entered IP Address has invalid format.");
+            
+            if (!Int32.TryParse(portInput, out int port))
+                throw new EndPointParserException("Entered Port has invalid format.");
 
-            bool ipParsed = IPAddress.TryParse(ipInput, out IPAddress ip);
-            if (!ipParsed)
-                MessageBox.Show("IP Address has invalid format.", "Input error");
+            if (port < 0 || port > 65535) 
+                throw new EndPointParserException("Invalid port number.\r\n" +
+                                                  "The port number must be between 0 and 65535");
 
-
-            bool portParsed = Int32.TryParse(portInput, out int port);
-            if (!portParsed)
-                MessageBox.Show("Port has invalid format.", "Input error");
-
-            bool portIsValid = true;
-            if (port < 0 || port > 65535)
-            {
-                MessageBox.Show("Invalid port number.\r\n" +
-                                "The port number must be between 0 and 65535", "Input error");
-                portIsValid = false;
-            }
-
-            if (ipParsed && portParsed && portIsValid)
-            {
-                endPoint = new IPEndPoint(ip, port);
-                return true;
-            }
-
-            endPoint = null;
-            return false;
+            return new IPEndPoint(ip, port);
         }
     }
 }

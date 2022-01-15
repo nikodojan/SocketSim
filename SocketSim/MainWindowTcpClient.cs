@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using SocketSim.Exceptions;
 using SocketSim.Helpers;
 using SocketSim.Sockets;
 using SocketSim.StaticLogs;
@@ -79,7 +80,7 @@ namespace SocketSim
             {
                 case "Connect":
                     Connect();
-                    SwitchClientControls_OnConnect(this, EventArgs.Empty);
+                    
                     break;
                 case "Disconnect":
                     SwitchClientControls_OnDisconnect(this, EventArgs.Empty);
@@ -111,7 +112,21 @@ namespace SocketSim
 
         public async Task Connect()
         {
-            var endPoint = ParsingHelper.ParseEndpoint(ClientIpTextBox.Text, ClientPortTextBox.Text);
+            try
+            {
+                var endPoint = ParsingHelper.TryParseEndpoint(ClientIpTextBox.Text, ClientPortTextBox.Text);
+                SwitchClientControls_OnConnect(this, EventArgs.Empty);
+            }
+            catch (EndPointParserException e)
+            {
+                MessageBox.Show(e.Message, "Address error");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
             _client = new SimpleTcpClient();
 
         }
