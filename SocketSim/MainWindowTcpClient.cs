@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -62,11 +63,18 @@ namespace SocketSim
             ClientMessageTextBox.Text = "";
         }
 
-        private void ClientSendMessageButton_Click(object sender, RoutedEventArgs e)
+        private async void ClientSendMessageButton_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _client.Send(ClientMessageTextBox.Text);
+            }
+            catch (Exception exception)
+            {
+                
+            }
         }
-        #endregion
+        
 
         private async void ClientClearLogButton_Click(object sender, RoutedEventArgs e)
         {
@@ -80,10 +88,9 @@ namespace SocketSim
             {
                 case "Connect":
                     Connect();
-                    
                     break;
                 case "Disconnect":
-                    SwitchClientControls_OnDisconnect(this, EventArgs.Empty);
+                    Disconnect();
                     break;
             };
         }
@@ -115,20 +122,34 @@ namespace SocketSim
             try
             {
                 var endPoint = ParsingHelper.TryParseEndpoint(ClientIpTextBox.Text, ClientPortTextBox.Text);
+                _client = new SimpleTcpClient();
+                _client.Connect(endPoint);
                 SwitchClientControls_OnConnect(this, EventArgs.Empty);
             }
             catch (EndPointParserException e)
             {
                 MessageBox.Show(e.Message, "Address error");
+                SwitchClientControls_OnDisconnect(this, EventArgs.Empty);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                SwitchClientControls_OnDisconnect(this, EventArgs.Empty);
             }
-            
-            _client = new SimpleTcpClient();
-
         }
+
+        private async Task Disconnect()
+        {
+            try
+            {
+                _client?.Disconnect();
+                SwitchClientControls_OnDisconnect(this, EventArgs.Empty);
+            }
+            catch (Exception e)
+            {
+                SwitchClientControls_OnDisconnect(this, EventArgs.Empty);
+            }
+        }
+
+        #endregion
     }
 }
