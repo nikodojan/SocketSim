@@ -11,6 +11,9 @@ using SocketSim.StaticLogs;
 
 namespace SocketSim.Sockets
 {
+    /// <summary>
+    /// This class contains function to access the TCPClient.
+    /// </summary>
     public class SimpleTcpClient
     {
         private StreamReader _reader;
@@ -18,6 +21,8 @@ namespace SocketSim.Sockets
         private TcpClient _tcpClient;
         private NetworkStream _stream;
         private IPEndPoint _remoteIPEndPoint;
+
+        private bool keepListening = true;
 
         public SimpleTcpClient( )
         {
@@ -42,6 +47,15 @@ namespace SocketSim.Sockets
 
                 await LogEventAsync($"C: Connected to {endPoint.ToString()}");
 
+                while (keepListening)
+                {
+                    var incoming = await _reader.ReadLineAsync();
+                    if (incoming is not null)
+                    {
+                        await LogEventAsync($"S: {incoming}");
+                    }
+                }
+
             }
             catch (Exception e)
             {
@@ -60,7 +74,7 @@ namespace SocketSim.Sockets
             }
             catch (Exception e)
             {
-                throw;
+                
             }
         }
 
@@ -68,7 +82,15 @@ namespace SocketSim.Sockets
         {
             try
             {
-                _tcpClient.Close();
+                if (_tcpClient is not null)
+                {
+                    _reader?.Close();
+                    _reader?.Dispose();
+                    await _writer.DisposeAsync();
+                    await _stream.DisposeAsync();
+                    _tcpClient?.Close();
+                }
+                
                 await LogEventAsync($"C: Disconnected");
             }
             catch (Exception e)

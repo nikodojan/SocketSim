@@ -32,7 +32,7 @@ namespace SocketSim
         /// </summary>
         private void InitializeTcpClientTab()
         {
-            ClientIpTextBox.Text = "127.0.0.0";
+            ClientIpTextBox.Text = "127.0.0.1";
             ClientPortTextBox.Text = "4646";
 
             // log text block and scroll viewer
@@ -41,7 +41,7 @@ namespace SocketSim
             ClientLogTextBox.Background = Brushes.White;
             ClientLogTextBox.TextWrapping = TextWrapping.Wrap;
 
-            ClientLogScrollViewer.Content = serverLogTextBox;
+            ClientLogScrollViewer.Content = ClientLogTextBox;
             ClientLogScrollViewer.Height = 150;
             ClientLogScrollViewer.Background = Brushes.White;
 
@@ -56,30 +56,8 @@ namespace SocketSim
 
             ClientSendMessageButton.Click += ClientSendMessageButton_Click;
             ClientDeleteMessageButton.Click += ClientDeleteMessageButton_Click;
-        }
 
-        private void ClientDeleteMessageButton_Click(object sender, RoutedEventArgs e)
-        {
-            ClientMessageTextBox.Text = "";
-        }
-
-        private async void ClientSendMessageButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                _client.Send(ClientMessageTextBox.Text);
-            }
-            catch (Exception exception)
-            {
-                
-            }
-        }
-        
-
-        private async void ClientClearLogButton_Click(object sender, RoutedEventArgs e)
-        {
-            ClientLogTextBox.Text = "";
-            await TcpClientLog.ResetAsync();
+            
         }
 
         private void ClientConnectButton_Click(object sender, RoutedEventArgs e)
@@ -95,34 +73,13 @@ namespace SocketSim
             };
         }
 
-        private void SwitchClientControls_OnConnect(object sender, EventArgs e)
-        {
-            ClientConnectButton.Content = ClientDisconnectButtonLabel;
-            ClientIpTextBox.IsEnabled = false;
-            ClientPortTextBox.IsEnabled = false;
-
-            ClientMessageTextBox.IsEnabled = true;
-            ClientSendMessageButton.IsEnabled = true;
-            ClientDeleteMessageButton.IsEnabled = true;
-        }
-
-        private void SwitchClientControls_OnDisconnect(object sender, EventArgs e)
-        {
-            ClientConnectButton.Content = ClientConnectButtonLabel;
-            ClientIpTextBox.IsEnabled = true;
-            ClientPortTextBox.IsEnabled = true;
-
-            ClientMessageTextBox.IsEnabled = false;
-            ClientSendMessageButton.IsEnabled = false;
-            ClientDeleteMessageButton.IsEnabled = false;
-        }
-
         public async Task Connect()
         {
             try
             {
                 var endPoint = ParsingHelper.TryParseEndpoint(ClientIpTextBox.Text, ClientPortTextBox.Text);
                 _client = new SimpleTcpClient();
+                _client.LogChanged += OnClientLogChanged;
                 _client.Connect(endPoint);
                 SwitchClientControls_OnConnect(this, EventArgs.Empty);
             }
@@ -149,6 +106,65 @@ namespace SocketSim
                 SwitchClientControls_OnDisconnect(this, EventArgs.Empty);
             }
         }
+
+        #region Event handlers
+        private void ClientDeleteMessageButton_Click(object sender, RoutedEventArgs e)
+        {
+            ClientMessageTextBox.Text = "";
+        }
+        private async void ClientSendMessageButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _client.Send(ClientMessageTextBox.Text);
+            }
+            catch (Exception exception)
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// When "Connect" button is clicked: Switches label to "Disconnect" and enables the message controls.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SwitchClientControls_OnConnect(object sender, EventArgs e)
+        {
+            ClientConnectButton.Content = ClientDisconnectButtonLabel;
+            ClientIpTextBox.IsEnabled = false;
+            ClientPortTextBox.IsEnabled = false;
+
+            ClientMessageTextBox.IsEnabled = true;
+            ClientSendMessageButton.IsEnabled = true;
+            ClientDeleteMessageButton.IsEnabled = true;
+        }
+        /// <summary>
+        /// When "Disonnect" button is clicked: Switches label to "Connect" and disables the message controls.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SwitchClientControls_OnDisconnect(object sender, EventArgs e)
+        {
+            ClientConnectButton.Content = ClientConnectButtonLabel;
+            ClientIpTextBox.IsEnabled = true;
+            ClientPortTextBox.IsEnabled = true;
+
+            ClientMessageTextBox.IsEnabled = false;
+            ClientSendMessageButton.IsEnabled = false;
+            ClientDeleteMessageButton.IsEnabled = false;
+        }
+
+        private void OnClientLogChanged(object sender, EventArgs e)
+        {
+            ClientLogTextBox.Text += TcpClientLog.Log[^1];
+        }
+        private async void ClientClearLogButton_Click(object sender, RoutedEventArgs e)
+        {
+            ClientLogTextBox.Text = "";
+            await TcpClientLog.ResetAsync();
+        }
+        #endregion
 
         #endregion
     }
