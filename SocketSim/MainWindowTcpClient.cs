@@ -73,6 +73,9 @@ namespace SocketSim
             };
         }
 
+        /// <summary>
+        /// Handles the connecting process, the UI changes and Exceptions.
+        /// </summary>
         public async Task Connect()
         {
             try
@@ -80,7 +83,7 @@ namespace SocketSim
                 var endPoint = ParsingHelper.TryParseEndpoint(ClientIpTextBox.Text, ClientPortTextBox.Text);
                 _client = new SimpleTcpClient();
                 _client.LogChanged += OnClientLogChanged;
-                _client.Connect(endPoint);
+                await _client.Connect(endPoint);
                 SwitchClientControls_OnConnect(this, EventArgs.Empty);
             }
             catch (EndPointParserException e)

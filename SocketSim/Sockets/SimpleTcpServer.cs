@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using System.Windows.Media.Animation;
 using SocketSim.StaticLogs;
 
 namespace SocketSim.Sockets
@@ -19,12 +20,14 @@ namespace SocketSim.Sockets
         private TcpClient _tcpClient;
         private NetworkStream _stream;
         private IPEndPoint _localIPEndPoint;
+        private bool _isEchoServer;
 
         private bool _keepListening = true;
         
-        public SimpleTcpServer(IPEndPoint endpoint)
+        public SimpleTcpServer(IPEndPoint endpoint, bool echo)
         {
             _localIPEndPoint = endpoint;
+            _isEchoServer = echo;
         }
 
         /// <summary>
@@ -76,6 +79,13 @@ namespace SocketSim.Sockets
                     if (incoming is not null)
                     {
                         await LogEventAsync($"C: {incoming}");
+                    }
+
+                    if (_isEchoServer)
+                    {
+                        await _writer.WriteLineAsync(incoming);
+                        await _writer.FlushAsync();
+                        await LogEventAsync($"S echo: {incoming}");
                     }
                 }
 

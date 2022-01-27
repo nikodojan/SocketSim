@@ -71,7 +71,7 @@
                                          AcceptsReturn="False" 
                                          VerticalAlignment="Center"
                                          Margin="5,0"/>
-                                <CheckBox Content="Echo" VerticalAlignment="Center"
+                                <CheckBox Name="ServerEchoCheckbox" Content="Echo" VerticalAlignment="Center"
                                           VerticalContentAlignment="Center"
                                 />
                             </StackPanel>

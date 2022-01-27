@@ -66,7 +66,8 @@ namespace SocketSim
         /// <returns></returns>
         public async Task StartTcpServer(IPEndPoint ep)
         {
-            _server = new SimpleTcpServer(ep);
+            var echo = ServerEchoCheckbox.IsChecked ?? false;
+            _server = new SimpleTcpServer(ep, echo);
             _server.LogChanged += OnServerLogChanged;
             _server.ServerStarted += SwitchServerControlsOnStart;
             _server.ServerStopped += SwitchServerControlsOnStop;
