@@ -150,6 +150,7 @@ namespace SocketSim
         private void OnServerLogChanged(object sender, EventArgs e)
         {
             serverLogTextBox.Text += TcpServerLog.Log[^1];
+            serverLogScrollViewer.ScrollToBottom();
         }
 
         private void OnClearLogButton_Click(object sender, RoutedEventArgs e)

@@ -13,7 +13,6 @@ namespace SocketSim.Sockets
     /// </summary>
     public class SimpleTcpServer
     {
-        //private Endpoint _endPoint;
         private StreamReader _reader;
         private StreamWriter _writer;
         private TcpListener _listener;
@@ -23,6 +22,7 @@ namespace SocketSim.Sockets
         private bool _isEchoServer;
 
         private bool _keepListening = true;
+        private bool _keepReading = true;
         
         public SimpleTcpServer(IPEndPoint endpoint, bool echo)
         {
@@ -54,8 +54,6 @@ namespace SocketSim.Sockets
         /// <exception cref="SocketException"></exception>
         public async Task StartListener()
         {
-            //IPEndPoint localIPEndPoint = new IPEndPoint(IPAddress.Parse(_endPoint.IPAddress), _endPoint.Port);
-
             try
             {
                 _listener = new TcpListener(_localIPEndPoint);
@@ -64,16 +62,48 @@ namespace SocketSim.Sockets
                 ServerStarted?.Invoke(this, EventArgs.Empty);
                 await LogEventAsync($"S: Server begins listening on {_localIPEndPoint.ToString()}");
 
-                _tcpClient = await _listener.AcceptTcpClientAsync();
+                while (_keepListening)
+                {
 
+
+                    TcpClient socket = await _listener.AcceptTcpClientAsync();
+
+                    //await HandleClient(socket);
+
+                    await HandleClient(socket);
+                }
+                
+            }
+            catch (SocketException se)
+            {
+                await LogEventAsync($"S: Listener S Exception: \r\n {se}");
+                await StopListener();
+            }
+            catch (Exception e)
+            {
+                await StopListener();
+                await LogEventAsync($"S: Listener Exception: \r\n {e}");
+            }
+            finally
+            {
+                ServerStopped?.Invoke(this, EventArgs.Empty);
+                await LogEventAsync("S: Server stopped listening.");
+            }
+        }
+
+        public async Task HandleClient(TcpClient socket)
+        {
+            try
+            {
+                _tcpClient = socket;
                 _stream = _tcpClient.GetStream();
                 _reader = new StreamReader(_stream);
                 _writer = new StreamWriter(_stream);
-                
+
                 ClientConnected?.Invoke(this, EventArgs.Empty);
                 await LogEventAsync($"S: Client connected: {_tcpClient.Client.RemoteEndPoint?.ToString()}");
 
-                while (_keepListening)
+                while (_keepReading)
                 {
                     var incoming = await _reader.ReadLineAsync();
                     if (incoming is not null)
@@ -88,21 +118,13 @@ namespace SocketSim.Sockets
                         await LogEventAsync($"S echo: {incoming}");
                     }
                 }
-
-            }
-            catch (SocketException se)
-            {
-                await StopListener();
             }
             catch (Exception e)
             {
-                await StopListener();
-                await LogEventAsync($"S: Exception: \r\n {e}");
-            }
-            finally
-            {
-                ServerStopped?.Invoke(this, EventArgs.Empty);
-                await LogEventAsync("S: Server stopped listening.");
+                await LogEventAsync($"S: Client Exception: \r\n {e}");
+                _tcpClient?.Dispose();
+                _tcpClient = new TcpClient();
+                //throw;
             }
         }
 
@@ -131,7 +153,7 @@ namespace SocketSim.Sockets
             _listener?.Stop();
 
             //ServerStopped?.Invoke(this, EventArgs.Empty);
-            //await LogEvent("S: Server stopped listening.");
+            //await LogEventAsync("S: Server stopped listening.");
         }
 
         /// <summary>

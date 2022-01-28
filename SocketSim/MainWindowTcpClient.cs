@@ -83,7 +83,7 @@ namespace SocketSim
                 var endPoint = ParsingHelper.TryParseEndpoint(ClientIpTextBox.Text, ClientPortTextBox.Text);
                 _client = new SimpleTcpClient();
                 _client.LogChanged += OnClientLogChanged;
-                await _client.Connect(endPoint);
+                _client.Connect(endPoint);
                 SwitchClientControls_OnConnect(this, EventArgs.Empty);
             }
             catch (EndPointParserException e)
