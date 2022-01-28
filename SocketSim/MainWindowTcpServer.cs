@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using SocketSim.Exceptions;
 using SocketSim.Helpers;
 using SocketSim.Sockets;
 using SocketSim.StaticLogs;
@@ -59,20 +60,7 @@ namespace SocketSim
             serverDeleteMessageButton.Click += ServerDeleteMessageButton_Click;
         }
 
-        /// <summary>
-        /// Creates a new TCP server instance, subscribes to it's events and starts listener.
-        /// </summary>
-        /// <param name="ep"></param>
-        /// <returns></returns>
-        public async Task StartTcpServer(IPEndPoint ep)
-        {
-            var echo = ServerEchoCheckbox.IsChecked ?? false;
-            _server = new SimpleTcpServer(ep, echo);
-            _server.LogChanged += OnServerLogChanged;
-            _server.ServerStarted += SwitchServerControlsOnStart;
-            _server.ServerStopped += SwitchServerControlsOnStop;
-            await _server.StartListener();
-        }
+
 
         /// <summary>
         /// Stops the Tcp Server.
@@ -105,8 +93,30 @@ namespace SocketSim
         /// </summary>
         public async void OnStartServerButtonClick()
         {
-            var parsedEndpoint = ParsingHelper.ParseEndpoint(serverIpTextBox.Text, serverPortTextBox.Text);
-            await StartTcpServer(parsedEndpoint);
+            try
+            {
+                var parsedEndpoint = ParsingHelper.TryParseEndpoint(serverIpTextBox.Text, serverPortTextBox.Text);
+                await StartTcpServer(parsedEndpoint);
+            }
+            catch (EndPointParserException e)
+            {
+                MessageBox.Show(e.Message, "Address error");
+            }
+        }
+
+        /// <summary>
+        /// Creates a new TCP server instance, subscribes to it's events and starts listener.
+        /// </summary>
+        /// <param name="ep"></param>
+        /// <returns></returns>
+        public async Task StartTcpServer(IPEndPoint ep)
+        {
+            var echo = ServerEchoCheckbox.IsChecked ?? false;
+            _server = new SimpleTcpServer(ep, echo);
+            _server.LogChanged += OnServerLogChanged;
+            _server.ServerStarted += SwitchServerControlsOnStart;
+            _server.ServerStopped += SwitchServerControlsOnStop;
+            await _server.StartListener();
         }
 
         public async void OnStopServerButtonClick()

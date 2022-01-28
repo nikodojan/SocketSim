@@ -76,13 +76,13 @@ namespace SocketSim.Sockets
             }
             catch (SocketException se)
             {
-                await LogEventAsync($"S: Listener S Exception: \r\n {se}");
+                //await LogEventAsync($"S: Listener S Exception: \r\n {se}");
                 await StopListener();
             }
             catch (Exception e)
             {
                 await StopListener();
-                await LogEventAsync($"S: Listener Exception: \r\n {e}");
+                //await LogEventAsync($"S: Listener Exception: \r\n {e}");
             }
             finally
             {
@@ -121,7 +121,7 @@ namespace SocketSim.Sockets
             }
             catch (Exception e)
             {
-                await LogEventAsync($"S: Client Exception: \r\n {e}");
+                //await LogEventAsync($"S: Client Exception: \r\n {e}");
                 _tcpClient?.Dispose();
                 _tcpClient = new TcpClient();
                 //throw;
