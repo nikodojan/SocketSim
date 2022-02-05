@@ -1,4 +1,6 @@
-**SocketSim** is personal WPF project
+**SocketSim** is personal WPF project  
+
+Status: Functions are working. There are some minor adjustments of the UI missing.
 
 The app is meant to be used to test TCP/UDP sockets
 
