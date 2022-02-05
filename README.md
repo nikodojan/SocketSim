@@ -12,3 +12,21 @@ Leearning goals:
 - get more understanding of TcpClient and UdpClient
 - use asynchronous programming with TcpClient and UdpClient
 - OBJECTIVE UPDATE: LOGGING !!!
+
+**Create a TCP server**  
+Enter the IP address and the port your server should listen on and start listening. Optionally, the server can run as echo server.  
+
+![image](https://user-images.githubusercontent.com/70850868/152645087-9b9528ef-80da-4325-888b-fc84cd6ee263.png)
+
+**Create a TCP client**  
+Enter the IP address and the port of the server you want to conntect to and click Connect.  
+
+![image](https://user-images.githubusercontent.com/70850868/152645098-b561052b-e882-470b-b69e-f6ffb1fc0560.png)
+
+**Send/receive via UDP**  
+You can either listen to incoming messages on the specified IP address and port.  
+Or you can simply send a message.  
+
+![image](https://user-images.githubusercontent.com/70850868/152645103-46b49178-1df5-4811-90a1-a67e2f79e577.png)
+
+
