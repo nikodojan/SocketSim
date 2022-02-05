@@ -11,3 +11,4 @@ Leearning goals:
 - create and use custom styles and templates
 - get more understanding of TcpClient and UdpClient
 - use asynchronous programming with TcpClient and UdpClient
+- OBJECTIVE UPDATE: LOGGING !!!
