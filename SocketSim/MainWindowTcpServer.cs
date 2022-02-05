@@ -116,7 +116,7 @@ namespace SocketSim
             _server.LogChanged += OnServerLogChanged;
             _server.ServerStarted += SwitchServerControlsOnStart;
             _server.ServerStopped += SwitchServerControlsOnStop;
-            await _server.StartListener();
+            _server.StartListener();
         }
 
         public async void OnStopServerButtonClick()

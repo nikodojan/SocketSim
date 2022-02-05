@@ -12,8 +12,8 @@
     </Window.Resources>
     <DockPanel>
     <Menu DockPanel.Dock="Top" VerticalAlignment="Center" Background="{StaticResource BasicBlue}" FontSize="14">
-            <MenuItem Header="_File" VerticalAlignment="Center" Foreground="WhiteSmoke">
-                <MenuItem Header="_Exit" Name="fileMenuExitButton" Background="{StaticResource BasicBlue}" Foreground="WhiteSmoke"/>
+            <MenuItem Header="_File" VerticalAlignment="Center" Foreground="WhiteSmoke" Background="{StaticResource BasicBlue}">
+                <MenuItem Header="_Exit" Name="fileMenuExitButton" Background="{StaticResource BasicBlue}" Foreground="WhiteSmoke" BorderBrush="Black"/>
             </MenuItem>
         </Menu>
         <Grid Margin="1,2,1,1">

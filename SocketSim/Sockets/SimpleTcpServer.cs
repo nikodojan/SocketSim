@@ -3,8 +3,10 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Animation;
 using SocketSim.StaticLogs;
+using log4net;
 
 namespace SocketSim.Sockets
 {
@@ -13,6 +15,8 @@ namespace SocketSim.Sockets
     /// </summary>
     public class SimpleTcpServer
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(SimpleTcpServer));
+
         private StreamReader _reader;
         private StreamWriter _writer;
         private TcpListener _listener;
@@ -57,19 +61,13 @@ namespace SocketSim.Sockets
             try
             {
                 _listener = new TcpListener(_localIPEndPoint);
-
                 _listener.Start();
                 ServerStarted?.Invoke(this, EventArgs.Empty);
                 await LogEventAsync($"S: Server begins listening on {_localIPEndPoint.ToString()}");
 
                 while (_keepListening)
                 {
-
-
                     TcpClient socket = await _listener.AcceptTcpClientAsync();
-
-                    //await HandleClient(socket);
-
                     await HandleClient(socket);
                 }
                 
@@ -103,13 +101,16 @@ namespace SocketSim.Sockets
                 ClientConnected?.Invoke(this, EventArgs.Empty);
                 await LogEventAsync($"S: Client connected: {_tcpClient.Client.RemoteEndPoint?.ToString()}");
 
+                
                 while (_keepReading)
                 {
-                    var incoming = await _reader.ReadLineAsync();
-                    if (incoming is not null)
-                    {
-                        await LogEventAsync($"C: {incoming}");
-                    }
+                    string? incoming = null;
+                    incoming = await _reader.ReadLineAsync();
+                    
+                    log.Debug("Reading done");
+                    if (incoming is null) break;
+
+                    await LogEventAsync($"C: {incoming}");
 
                     if (_isEchoServer)
                     {
@@ -117,14 +118,17 @@ namespace SocketSim.Sockets
                         await _writer.FlushAsync();
                         await LogEventAsync($"S echo: {incoming}");
                     }
+                    log.Debug("While interation over");
                 }
             }
             catch (Exception e)
             {
-                //await LogEventAsync($"S: Client Exception: \r\n {e}");
+                //await LogEventAsync($"S: HandleClient Exception: \r\n");
+                _keepReading = false;
                 _tcpClient?.Dispose();
                 _tcpClient = new TcpClient();
-                //throw;
+                
+                log.Debug("Class: SimpleTcpServer, Method: HandleClient, " + e);
             }
         }
 

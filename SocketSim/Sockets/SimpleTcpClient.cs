@@ -86,7 +86,7 @@ namespace SocketSim.Sockets
                 {
                     _reader?.Close();
                     _reader?.Dispose();
-                    await _writer.DisposeAsync();
+                    //await _writer.DisposeAsync();
                     await _stream.DisposeAsync();
                     _tcpClient?.Close();
                 }
